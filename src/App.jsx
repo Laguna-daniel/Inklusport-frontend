@@ -1,6 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from './assets/logo.png';
+import Login from './ui/pages/Login';
+import Register from './ui/pages/Register';
+import './styles/App.css';
+import logo from './ui/assets/logo.png';
 
 function App() {
   const navigate = useNavigate();
