@@ -18,56 +18,49 @@ function App() {
 
   return (
     <div style={styles.container}>
+      {/* Fuentes: Oswald para titulares con carácter deportivo, Inter para texto, JetBrains Mono para etiquetas técnicas */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+      `}</style>
+
       {/* 1. ELEMENTO DECORATIVO: Patrón de cuadrícula técnica en el fondo */}
       <div style={styles.gridOverlay}></div>
 
-      {/* 2. BARRA SUPERIOR: Detalles de navegación global para rellenar espacio útil */}
-      <header style={styles.headerTop}>
-        <span style={styles.versionTag}>INKLUSPORT ECOSYSTEM v1.0</span>
-        <div style={styles.topLinks}>
-          <span style={styles.topLink}>Soporte</span>
-          <span style={styles.topLink}>Accesibilidad</span>
-          <span style={styles.topLinkActive}>ES</span>
-        </div>
-      </header>
+      {/* 1b. ELEMENTO FIRMA: Carriles de pista de atletismo, gran escala, para ocupar el espacio vacío del fondo */}
+      <div style={styles.laneField} aria-hidden="true">
+        <div style={{ ...styles.lane, top: '8%' }}></div>
+        <div style={{ ...styles.lane, top: '28%' }}></div>
+        <div style={{ ...styles.lane, top: '48%' }}></div>
+        <div style={{ ...styles.lane, top: '68%' }}></div>
+        <div style={{ ...styles.lane, top: '88%' }}></div>
+      </div>
 
-      {/* CONTENEDOR ESTRUCTURAL PRINCIPAL (Mantiene tu misma distribución horizontal) */}
+      {/* CONTENEDOR ESTRUCTURAL PRINCIPAL */}
       <main style={styles.contentWrapper}>
-        
-        {/* BLOQUE IZQUIERDO: Identidad + Contenido de Valor Agregado */}
+
+        {/* BLOQUE IZQUIERDO - CON ALINEACIÓN PERFECTA CON EL BORDE DEL LOGO */}
         <div style={styles.leftSection}>
-          <div style={styles.logoFrame}>
-            <img src={logo} alt="Inklusport Logo" style={styles.logo} />
-          </div>
-          
-          {/* Bloque de texto agregado para justificar el espacio */}
-          <div style={styles.brandTextGroup}>
-            <h1 style={styles.brandTitle}>Alto Rendimiento Inclusivo</h1>
-            <p style={styles.brandData}>
-              Portal centralizado para la gestión de atletas adaptados, analíticas avanzadas y organización de eventos deportivos oficiales.
-            </p>
+          {/* LOGO Y TEXTO COMPARTIENDO LA MISMA ESTRUCTURA DE ANCHO */}
+          <div style={styles.logoWrapper}>
+            <div style={styles.logoFrame}>
+              <img src={logo} alt="Inklusport Logo" style={styles.logo} />
+            </div>
           </div>
 
-          {/* Fila de mini-métricas técnicas simuladas para robustecer la UI */}
-          <div style={styles.metricsRow}>
-            <div style={styles.metricItem}>
-              <span style={styles.metricNumber}>+12k</span>
-              <span style={styles.metricLabel}>Atletas</span>
-            </div>
-            <div style={styles.metricDivider}></div>
-            <div style={styles.metricItem}>
-              <span style={styles.metricNumber}>100%</span>
-              <span style={styles.metricLabel}>Accesible</span>
-            </div>
-            <div style={styles.metricDivider}></div>
-            <div style={styles.metricItem}>
-              <span style={styles.metricNumber}>Real-Time</span>
-              <span style={styles.metricLabel}>Métricas</span>
+          {/* TEXTO EXACTAMENTE ALINEADO AL BORDE IZQUIERDO DEL MARCO DEL LOGO */}
+          <div style={styles.textContentWrapper}>
+            <span style={styles.eyebrow}>Plataforma · Deporte Adaptado</span>
+
+            <div style={styles.brandTextGroup}>
+              <h1 style={styles.brandTitle}>Alto Rendimiento Inclusivo</h1>
+              <p style={styles.brandData}>
+                Portal centralizado para la gestión de atletas adaptados, analíticas avanzadas y organización de eventos deportivos oficiales.
+              </p>
             </div>
           </div>
         </div>
 
-        {/* BLOQUE DERECHO: Tarjeta de Acciones Estilizada */}
+        {/* BLOQUE DERECHO */}
         <div style={styles.rightSection}>
           <div style={styles.actionCard}>
             <div style={styles.cardHeader}>
@@ -76,8 +69,8 @@ function App() {
             </div>
 
             <div style={styles.buttonGroup}>
-              <button 
-                onClick={handleRegister} 
+              <button
+                onClick={handleRegister}
                 style={styles.registerButton}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = '#F8FAFC';
@@ -90,9 +83,9 @@ function App() {
               >
                 Registrarse
               </button>
-              
-              <button 
-                onClick={handleLogin} 
+
+              <button
+                onClick={handleLogin}
                 style={styles.loginButton}
                 onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#890A0D'}
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#A30D11'}
@@ -105,30 +98,40 @@ function App() {
 
       </main>
 
-      {/* 3. BARRA INFERIOR: Footer corporativo para cerrar el diseño */}
+      {/* 3. BARRA INFERIOR */}
       <footer style={styles.footerBottom}>
-        <span>© {new Date().getFullYear()} Inklusport Inc. Todos los derechos reservados.</span>
-        <span>Seguridad TLS Encrypted</span>
       </footer>
     </div>
   );
-}
+};
 
-// Estilos Profesionales Estructurados
+// ============================================
+// ESTILOS - CON ALINEACIÓN DE BORDES CORREGIDA
+// ============================================
 const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    width: '100vw',
-    height: '100vh',
-    backgroundColor: '#F8FAFC', // Fondo gris claro de software moderno
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+    width: '100%',
+    height: '100%',
+    minWidth: '100vw',
+    minHeight: '100vh',
+    maxWidth: '100vw',
+    maxHeight: '100vh',
+    backgroundColor: '#F8FAFC',
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     margin: 0,
     padding: 0,
     boxSizing: 'border-box',
-    position: 'relative',
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     overflow: 'hidden',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
   },
   gridOverlay: {
     position: 'absolute',
@@ -136,21 +139,42 @@ const styles = {
     left: 0,
     right: 0,
     bottom: 0,
-    // Genera una cuadrícula fina de píxeles gris transparente que llena el fondo elegantemente
     backgroundImage: 'linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px)',
     backgroundSize: '30px 30px',
     zIndex: 1,
+    pointerEvents: 'none',
+  },
+  laneField: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 2,
+    pointerEvents: 'none',
+    overflow: 'hidden',
+  },
+  lane: {
+    position: 'absolute',
+    left: '-10%',
+    width: '140%',
+    height: '2px',
+    backgroundColor: 'rgba(163, 13, 17, 0.06)',
+    transform: 'rotate(-6deg)',
   },
   headerTop: {
     width: '100%',
-    padding: '24px 60px',
+    maxWidth: '1180px',
+    padding: '20px 60px 16px 60px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     boxSizing: 'border-box',
     zIndex: 5,
+    flexShrink: 0,
   },
   versionTag: {
+    fontFamily: "'JetBrains Mono', monospace",
     fontSize: '11px',
     color: '#64748B',
     fontWeight: '700',
@@ -174,113 +198,155 @@ const styles = {
   contentWrapper: {
     display: 'flex',
     width: '100%',
-    maxWidth: '1100px',
+    maxWidth: '1180px',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: '80px',
+    gap: '70px',
     padding: '0 60px',
     margin: '0 auto',
     boxSizing: 'border-box',
     zIndex: 5,
+    flex: '1 1 auto',
+    minHeight: 0,
   },
+  
+  // ============================================
+  // SECCIÓN IZQUIERDA - ALINEACIÓN DE BORDES
+  // ============================================
   leftSection: {
-    flex: '1.1',
+    flex: '1.15',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
+    justifyContent: 'center',
+    width: '100%',
   },
-  logoFrame: {
-    marginBottom: '28px',
+  
+  logoWrapper: {
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'flex-start',
+    marginBottom: '20px',
+    width: '100%',
   },
+  
+  logoFrame: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: '12px',
+    padding: '16px 24px',
+    border: '2px solid #A30D11',
+    boxShadow: '0 2px 8px rgba(163, 13, 17, 0.08)',
+    transition: 'all 0.3s ease',
+  },
+  
   logo: {
     width: '100%',
-    maxWidth: '240px',
+    maxWidth: '340px',
     height: 'auto',
     objectFit: 'contain',
+    display: 'block',
   },
-  brandTextGroup: {
-    marginBottom: '32px',
-    maxWidth: '460px',
-  },
-  brandTitle: {
-    fontSize: '26px',
-    fontWeight: '800',
-    color: '#0F172A',
-    margin: '0 0 10px 0',
-    letterSpacing: '-0.5px',
-  },
-  brandData: {
-    fontSize: '14px',
-    color: '#475569',
-    lineHeight: '1.6',
-    margin: 0,
-  },
-  metricsRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '24px',
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    backdropFilter: 'blur(8px)',
-    padding: '14px 24px',
-    borderRadius: '12px',
-    border: '1px solid #E2E8F0',
-  },
-  metricItem: {
+  
+  // Contenedor alineado estrictamente a la izquierda sin márgenes residuales
+  textContentWrapper: {
     display: 'flex',
     flexDirection: 'column',
+    alignItems: 'flex-start',
+    paddingLeft: '0px',
+    marginLeft: '0px',
+    width: '100%',
+    maxWidth: '520px',
   },
-  metricNumber: {
-    fontSize: '16px',
-    fontWeight: '700',
-    color: '#A30D11',
-  },
-  metricLabel: {
+  
+  eyebrow: {
+    fontFamily: "'JetBrains Mono', monospace",
     fontSize: '11px',
-    color: '#64748B',
-    fontWeight: '500',
-    marginTop: '2px',
+    fontWeight: '700',
+    letterSpacing: '1.2px',
+    color: '#A30D11',
+    backgroundColor: 'rgba(163, 13, 17, 0.07)',
+    border: '1px solid rgba(163, 13, 17, 0.18)',
+    borderRadius: '20px',
+    padding: '5px 12px',
+    marginBottom: '14px',
+    textTransform: 'uppercase',
+    alignSelf: 'flex-start',
   },
-  metricDivider: {
-    width: '1px',
-    height: '30px',
-    backgroundColor: '#E2E8F0',
+  
+  brandTextGroup: {
+    marginBottom: '20px',
+    width: '100%',
+    textAlign: 'left',
   },
+  
+  brandTitle: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '34px',
+    fontWeight: '700',
+    color: '#0F172A',
+    margin: '0 0 10px 0',
+    letterSpacing: '-0.3px',
+    textTransform: 'uppercase',
+    textAlign: 'left',
+  },
+  
+  brandData: {
+    fontSize: '14.5px',
+    color: '#475569',
+    lineHeight: '1.65',
+    margin: 0,
+    textAlign: 'left',
+  },
+  
+  // ============================================
+  // SECCIÓN DERECHA
+  // ============================================
   rightSection: {
     flex: '0.9',
     display: 'flex',
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
+  
   actionCard: {
     width: '100%',
-    maxWidth: '360px',
+    maxWidth: '380px',
     backgroundColor: '#FFFFFF',
-    padding: '36px',
+    padding: '36px 40px',
     borderRadius: '16px',
-    boxShadow: '0 10px 25px rgba(15, 23, 42, 0.05)',
+    boxShadow: '0 14px 32px rgba(15, 23, 42, 0.07)',
     border: '1px solid #E2E8F0',
   },
+  
   cardHeader: {
-    marginBottom: '28px',
+    marginBottom: '26px',
   },
+  
   cardTitle: {
-    fontSize: '20px',
-    fontWeight: '700',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '22px',
+    fontWeight: '600',
     color: '#0F172A',
-    margin: '0 0 6px 0',
+    margin: '0 0 5px 0',
+    textTransform: 'uppercase',
+    letterSpacing: '0.2px',
   },
+  
   cardSubtitle: {
     fontSize: '13px',
     color: '#64748B',
     margin: 0,
   },
+  
   buttonGroup: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '14px',
+    gap: '12px',
   },
+  
   registerButton: {
     width: '100%',
     padding: '14px 0',
@@ -293,6 +359,7 @@ const styles = {
     cursor: 'pointer',
     transition: 'all 0.15s ease',
   },
+  
   loginButton: {
     width: '100%',
     padding: '14px 0',
@@ -305,9 +372,11 @@ const styles = {
     cursor: 'pointer',
     transition: 'background-color 0.15s ease',
   },
+  
   footerBottom: {
     width: '100%',
-    padding: '24px 60px',
+    maxWidth: '1180px',
+    padding: '16px 60px 20px 60px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -316,6 +385,7 @@ const styles = {
     fontWeight: '500',
     boxSizing: 'border-box',
     zIndex: 5,
+    flexShrink: 0,
   },
 };
 
