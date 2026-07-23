@@ -1,11 +1,155 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import Login from './ui/pages/Login';
-import Register from './ui/pages/Register';
+import React, { useEffect, useRef } from 'react';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import Login from './ui/pages/Login.jsx';
+import Register from './ui/pages/Register.jsx';
 import './styles/App.css';
 import logo from './ui/assets/logo.png';
 
-function App() {
+// =========================================================
+// TRANSICIÓN SUAVE DE PÁGINAS (SIN DESTELLOS NEGROS)
+// =========================================================
+const pageVariants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { duration: 0.25, ease: 'easeOut' } },
+  exit: { opacity: 0, transition: { duration: 0.15, ease: 'easeIn' } },
+};
+
+const AnimatedPage = ({ children }) => {
+  return (
+    <motion.div
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      style={{
+        width: '100vw',
+        height: '100vh',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        backgroundColor: '#F8FAFC', // Mantiene el fondo limpio y evita cualquier flash
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+// COMPONENTE: CAMPO ESPACIAL VISUAL DE PARTÍCULAS ROJAS (ESTABLE, SIN PARPADEO)
+const RedSpaceBackground = () => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    let animationFrameId;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    const handleResize = () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      initParticles();
+    };
+    window.addEventListener('resize', handleResize);
+
+    let particles = [];
+    const particleCount = 220;
+
+    // Paleta de Colores Espaciales Rojos
+    const redPalette = [
+      'rgba(163, 13, 17, ',   // Rojo Inklusport principal
+      'rgba(225, 29, 72, ',   // Rojo Rubí brillante
+      'rgba(244, 63, 94, ',   // Coral Neón
+      'rgba(255, 77, 77, ',   // Rojo Espacial Claro
+      'rgba(180, 20, 30, ',   // Rojo Profundo
+    ];
+
+    const initParticles = () => {
+      particles = [];
+
+      for (let i = 0; i < particleCount; i++) {
+        const x = Math.random() * width;
+        const y = Math.random() * height;
+        const depth = Math.random() * 0.85 + 0.15; // Profundidad Z para efecto 3D
+
+        particles.push({
+          x,
+          y,
+          depth,
+          size: (Math.random() * 2.8 + 1.0) * depth,
+          colorPrefix: redPalette[Math.floor(Math.random() * redPalette.length)],
+          alpha: Math.random() * 0.45 + 0.35, // Brillo estático fijo (sin parpadeo)
+          // Movimiento de deriva suave en el espacio
+          vx: (Math.random() - 0.5) * 0.4 * depth,
+          vy: (Math.random() - 0.5) * 0.4 * depth,
+        });
+      }
+    };
+
+    initParticles();
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      particles.forEach((p) => {
+        // 1. Deriva continua en el espacio
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Reenvolver en la pantalla al salir por las orillas
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
+
+        // 2. Renderizado Visual sin fluctuaciones de alpha (sin parpadeo)
+        if (p.depth > 0.6) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size * 1.8, 0, Math.PI * 2);
+          ctx.fillStyle = `${p.colorPrefix}${(p.alpha * 0.2).toFixed(2)})`;
+          ctx.fill();
+        }
+
+        // Núcleo de la partícula con opacidad estática
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `${p.colorPrefix}${p.alpha.toFixed(2)})`;
+        ctx.fill();
+      });
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        pointerEvents: 'none',
+        zIndex: 3,
+      }}
+    />
+  );
+};
+
+// COMPONENTE LANDING / HOME
+const Home = () => {
   const navigate = useNavigate();
 
   const handleRegister = () => {
@@ -18,36 +162,25 @@ function App() {
 
   return (
     <div style={styles.container}>
-      {/* Fuentes: Oswald para titulares con carácter deportivo, Inter para texto, JetBrains Mono para etiquetas técnicas */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
       `}</style>
 
-      {/* 1. ELEMENTO DECORATIVO: Patrón de cuadrícula técnica en el fondo */}
+      {/* 1. RETÍCULA DE FONDO */}
       <div style={styles.gridOverlay}></div>
 
-      {/* 1b. ELEMENTO FIRMA: Carriles de pista de atletismo, gran escala, para ocupar el espacio vacío del fondo */}
-      <div style={styles.laneField} aria-hidden="true">
-        <div style={{ ...styles.lane, top: '8%' }}></div>
-        <div style={{ ...styles.lane, top: '28%' }}></div>
-        <div style={{ ...styles.lane, top: '48%' }}></div>
-        <div style={{ ...styles.lane, top: '68%' }}></div>
-        <div style={{ ...styles.lane, top: '88%' }}></div>
-      </div>
+      {/* 2. CAPA ESPACIAL DE PARTÍCULAS ROJAS (ESTABLE, SIN PARPADEO) */}
+      <RedSpaceBackground />
 
-      {/* CONTENEDOR ESTRUCTURAL PRINCIPAL */}
+      {/* CONTENEDOR PRINCIPAL */}
       <main style={styles.contentWrapper}>
-
-        {/* BLOQUE IZQUIERDO - CON ALINEACIÓN PERFECTA CON EL BORDE DEL LOGO */}
         <div style={styles.leftSection}>
-          {/* LOGO Y TEXTO COMPARTIENDO LA MISMA ESTRUCTURA DE ANCHO */}
           <div style={styles.logoWrapper}>
             <div style={styles.logoFrame}>
               <img src={logo} alt="Inklusport Logo" style={styles.logo} />
             </div>
           </div>
 
-          {/* TEXTO EXACTAMENTE ALINEADO AL BORDE IZQUIERDO DEL MARCO DEL LOGO */}
           <div style={styles.textContentWrapper}>
             <span style={styles.eyebrow}>Plataforma · Deporte Adaptado</span>
 
@@ -60,7 +193,6 @@ function App() {
           </div>
         </div>
 
-        {/* BLOQUE DERECHO */}
         <div style={styles.rightSection}>
           <div style={styles.actionCard}>
             <div style={styles.cardHeader}>
@@ -69,7 +201,10 @@ function App() {
             </div>
 
             <div style={styles.buttonGroup}>
-              <button
+              {/* Botón Registrarse con animación clara de expansión */}
+              <motion.button
+                whileTap={{ scale: 1.08 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 12 }}
                 onClick={handleRegister}
                 style={styles.registerButton}
                 onMouseEnter={(e) => {
@@ -82,118 +217,77 @@ function App() {
                 }}
               >
                 Registrarse
-              </button>
+              </motion.button>
 
-              <button
+              {/* Botón Iniciar Sesión con animación clara de expansión */}
+              <motion.button
+                whileTap={{ scale: 1.08 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 12 }}
                 onClick={handleLogin}
                 style={styles.loginButton}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#890A0D'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#A30D11'}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#890A0D')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#A30D11')}
               >
                 Iniciar Sesión
-              </button>
+              </motion.button>
             </div>
           </div>
         </div>
-
       </main>
 
-      {/* 3. BARRA INFERIOR */}
+      {/* FOOTER */}
       <footer style={styles.footerBottom}>
+
       </footer>
     </div>
   );
 };
 
+// COMPONENTE PRINCIPAL CON ENRUTAMIENTO Y TRANSICIONES LIMPIAS
+function App() {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="popLayout">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<AnimatedPage><Home /></AnimatedPage>} />
+        <Route path="/login" element={<AnimatedPage><Login /></AnimatedPage>} />
+        <Route path="/register" element={<AnimatedPage><Register /></AnimatedPage>} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
 // ============================================
-// ESTILOS - CON ALINEACIÓN DE BORDES CORREGIDA
+// ESTILOS
 // ============================================
 const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    width: '100%',
-    height: '100%',
-    minWidth: '100vw',
-    minHeight: '100vh',
-    maxWidth: '100vw',
-    maxHeight: '100vh',
+    width: '100vw',
+    height: '100vh',
     backgroundColor: '#F8FAFC',
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
     margin: 0,
     padding: 0,
     boxSizing: 'border-box',
     position: 'fixed',
     top: 0,
     left: 0,
-    right: 0,
-    bottom: 0,
     overflow: 'hidden',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     zIndex: 9999,
   },
   gridOverlay: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundImage: 'linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px)',
-    backgroundSize: '30px 30px',
+    inset: 0,
+    backgroundImage:
+      'linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px)',
+    backgroundSize: '36px 36px',
     zIndex: 1,
     pointerEvents: 'none',
-  },
-  laneField: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 2,
-    pointerEvents: 'none',
-    overflow: 'hidden',
-  },
-  lane: {
-    position: 'absolute',
-    left: '-10%',
-    width: '140%',
-    height: '2px',
-    backgroundColor: 'rgba(163, 13, 17, 0.06)',
-    transform: 'rotate(-6deg)',
-  },
-  headerTop: {
-    width: '100%',
-    maxWidth: '1180px',
-    padding: '20px 60px 16px 60px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    boxSizing: 'border-box',
-    zIndex: 5,
-    flexShrink: 0,
-  },
-  versionTag: {
-    fontFamily: "'JetBrains Mono', monospace",
-    fontSize: '11px',
-    color: '#64748B',
-    fontWeight: '700',
-    letterSpacing: '1px',
-  },
-  topLinks: {
-    display: 'flex',
-    gap: '24px',
-    fontSize: '13px',
-    color: '#64748B',
-    fontWeight: '500',
-  },
-  topLink: {
-    cursor: 'pointer',
-  },
-  topLinkActive: {
-    color: '#A30D11',
-    fontWeight: '700',
-    cursor: 'pointer',
   },
   contentWrapper: {
     display: 'flex',
@@ -201,188 +295,151 @@ const styles = {
     maxWidth: '1180px',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: '70px',
+    gap: '60px',
     padding: '0 60px',
-    margin: '0 auto',
+    margin: 'auto 0',
     boxSizing: 'border-box',
     zIndex: 5,
-    flex: '1 1 auto',
-    minHeight: 0,
   },
-  
-  // ============================================
-  // SECCIÓN IZQUIERDA - ALINEACIÓN DE BORDES
-  // ============================================
   leftSection: {
-    flex: '1.15',
+    flex: '1.2',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
     justifyContent: 'center',
-    width: '100%',
   },
-  
   logoWrapper: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-start',
-    marginBottom: '20px',
-    width: '100%',
+    marginBottom: '24px',
   },
-  
   logoFrame: {
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
-    borderRadius: '12px',
-    padding: '16px 24px',
+    borderRadius: '14px',
+    padding: '14px 22px',
     border: '2px solid #A30D11',
-    boxShadow: '0 2px 8px rgba(163, 13, 17, 0.08)',
-    transition: 'all 0.3s ease',
+    boxShadow: '0 4px 16px rgba(163, 13, 17, 0.08)',
   },
-  
   logo: {
     width: '100%',
-    maxWidth: '340px',
+    maxWidth: '280px',
     height: 'auto',
     objectFit: 'contain',
     display: 'block',
   },
-  
-  // Contenedor alineado estrictamente a la izquierda sin márgenes residuales
   textContentWrapper: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
-    paddingLeft: '0px',
-    marginLeft: '0px',
-    width: '100%',
     maxWidth: '520px',
   },
-  
   eyebrow: {
     fontFamily: "'JetBrains Mono', monospace",
     fontSize: '11px',
     fontWeight: '700',
-    letterSpacing: '1.2px',
+    letterSpacing: '1px',
     color: '#A30D11',
-    backgroundColor: 'rgba(163, 13, 17, 0.07)',
-    border: '1px solid rgba(163, 13, 17, 0.18)',
+    backgroundColor: 'rgba(163, 13, 17, 0.08)',
+    border: '1px solid rgba(163, 13, 17, 0.2)',
     borderRadius: '20px',
-    padding: '5px 12px',
-    marginBottom: '14px',
+    padding: '6px 14px',
+    marginBottom: '16px',
     textTransform: 'uppercase',
-    alignSelf: 'flex-start',
   },
-  
   brandTextGroup: {
-    marginBottom: '20px',
-    width: '100%',
     textAlign: 'left',
   },
-  
   brandTitle: {
     fontFamily: "'Oswald', sans-serif",
-    fontSize: '34px',
+    fontSize: '38px',
     fontWeight: '700',
     color: '#0F172A',
-    margin: '0 0 10px 0',
+    margin: '0 0 12px 0',
     letterSpacing: '-0.3px',
     textTransform: 'uppercase',
-    textAlign: 'left',
+    lineHeight: '1.15',
   },
-  
   brandData: {
-    fontSize: '14.5px',
+    fontSize: '15px',
     color: '#475569',
-    lineHeight: '1.65',
+    lineHeight: '1.6',
     margin: 0,
-    textAlign: 'left',
   },
-  
-  // ============================================
-  // SECCIÓN DERECHA
-  // ============================================
   rightSection: {
-    flex: '0.9',
+    flex: '0.85',
     display: 'flex',
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
-  
   actionCard: {
     width: '100%',
     maxWidth: '380px',
     backgroundColor: '#FFFFFF',
-    padding: '36px 40px',
-    borderRadius: '16px',
-    boxShadow: '0 14px 32px rgba(15, 23, 42, 0.07)',
+    padding: '40px 36px',
+    borderRadius: '20px',
+    boxShadow: '0 20px 40px rgba(15, 23, 42, 0.08)',
     border: '1px solid #E2E8F0',
   },
-  
   cardHeader: {
-    marginBottom: '26px',
+    marginBottom: '28px',
   },
-  
   cardTitle: {
     fontFamily: "'Oswald', sans-serif",
-    fontSize: '22px',
+    fontSize: '24px',
     fontWeight: '600',
     color: '#0F172A',
-    margin: '0 0 5px 0',
+    margin: '0 0 6px 0',
     textTransform: 'uppercase',
     letterSpacing: '0.2px',
   },
-  
   cardSubtitle: {
     fontSize: '13px',
     color: '#64748B',
     margin: 0,
+    lineHeight: '1.4',
   },
-  
   buttonGroup: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px',
+    gap: '14px',
   },
-  
   registerButton: {
     width: '100%',
     padding: '14px 0',
     backgroundColor: '#FFFFFF',
     color: '#A30D11',
     border: '1px solid #CBD5E1',
-    borderRadius: '8px',
+    borderRadius: '10px',
     fontSize: '14px',
-    fontWeight: '600',
+    fontWeight: '700',
     cursor: 'pointer',
-    transition: 'all 0.15s ease',
   },
-  
   loginButton: {
     width: '100%',
     padding: '14px 0',
     backgroundColor: '#A30D11',
     color: '#FFFFFF',
     border: 'none',
-    borderRadius: '8px',
+    borderRadius: '10px',
     fontSize: '14px',
-    fontWeight: '600',
+    fontWeight: '700',
     cursor: 'pointer',
-    transition: 'background-color 0.15s ease',
+    boxShadow: '0 4px 12px rgba(163, 13, 17, 0.2)',
   },
-  
   footerBottom: {
     width: '100%',
     maxWidth: '1180px',
-    padding: '16px 60px 20px 60px',
+    padding: '0 60px 24px 60px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     fontSize: '11px',
     color: '#94A3B8',
-    fontWeight: '500',
+    fontWeight: '600',
+    letterSpacing: '0.5px',
     boxSizing: 'border-box',
     zIndex: 5,
     flexShrink: 0,
