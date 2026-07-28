@@ -114,6 +114,9 @@ const Login = () => {
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
+  
+  // Estado para controlar las vistas de resultado: 'idle' | 'success' | 'error'
+  const [authStatus, setAuthStatus] = useState('idle');
 
   // Estados de Accesibilidad
   const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
@@ -130,7 +133,19 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Inicio de sesión:', formData);
+    
+    // USUARIO DE EJEMPLO PARA EL BOCETO
+    const usuarioEjemplo = {
+      email: "admin@inklusport.com",
+      password: "123456"
+    };
+
+    // Validar credenciales de prueba
+    if (formData.email === usuarioEjemplo.email && formData.password === usuarioEjemplo.password) {
+      setAuthStatus('success');
+    } else {
+      setAuthStatus('error');
+    }
   };
 
   const handleIncreaseFont = () => {
@@ -157,7 +172,6 @@ const Login = () => {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
 
-        /* RESET & WRAPPER FULLSCREEN CON FONDO CLARO */
         .login-wrapper {
           position: fixed;
           top: 0;
@@ -183,7 +197,6 @@ const Login = () => {
           padding: 0;
         }
 
-        /* MODO ALTO CONTRASTE (ACCESIBILIDAD) */
         .login-wrapper.high-contrast-mode {
           background-color: #000000 !important;
         }
@@ -195,32 +208,7 @@ const Login = () => {
           border-color: #FFFFFF !important;
           box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
         }
-        .login-wrapper.high-contrast-mode .auth-title,
-        .login-wrapper.high-contrast-mode .input-field,
-        .login-wrapper.high-contrast-mode .auth-footer p,
-        .login-wrapper.high-contrast-mode .brand-name,
-        .login-wrapper.high-contrast-mode .back-arrow-btn {
-          color: #FFFFFF !important;
-        }
-        .login-wrapper.high-contrast-mode .input-box {
-          background-color: #000000 !important;
-          border-color: #FFFFFF !important;
-        }
-        .login-wrapper.high-contrast-mode .input-label {
-          color: #FFD700 !important;
-        }
-        .login-wrapper.high-contrast-mode .input-field::placeholder {
-          color: #AAAAAA !important;
-        }
 
-        /* APLICACIÓN DINÁMICA DE TAMAÑO DE FUENTE */
-        .login-wrapper .auth-title { font-size: calc(26px + var(--font-offset)); }
-        .login-wrapper .hero-title { font-size: calc(34px + var(--font-offset)); }
-        .login-wrapper .input-field { font-size: calc(13.5px + var(--font-offset)); }
-        .login-wrapper .input-label { font-size: calc(10px + var(--font-offset)); }
-        .login-wrapper .auth-footer { font-size: calc(12.5px + var(--font-offset)); }
-
-        /* RETÍCULA DE FONDO CLARA */
         .gridOverlay {
           position: absolute;
           inset: 0;
@@ -230,7 +218,6 @@ const Login = () => {
           pointer-events: none;
         }
 
-        /* HEADER SUPERIOR CON LOGO */
         .top-header {
           width: 100%;
           max-width: 1050px;
@@ -273,6 +260,16 @@ const Login = () => {
           letter-spacing: 0.5px;
         }
 
+        .user-icon-btn {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: #475569;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
         /* CARD PRINCIPAL CENTRADA */
         .auth-card {
           display: flex;
@@ -287,6 +284,132 @@ const Login = () => {
           margin: auto;
           z-index: 5;
           border: 1px solid #E2E8F0;
+        }
+
+        /* FONDO OSCURO PARA MODALES TIPO TOKEN (OVERLAY) */
+        .modal-backdrop {
+          position: fixed;
+          inset: 0;
+          background-color: rgba(15, 23, 42, 0.55);
+          backdrop-filter: blur(4px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 10000;
+          padding: 20px;
+          animation: fadeInBackdrop 0.2s ease-out forwards;
+        }
+
+        @keyframes fadeInBackdrop {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        /* VENTANA EMERGENTE TIPO TOKEN */
+        .auth-card-modal {
+          width: 100% !important;
+          max-width: 440px !important;
+          height: auto !important;
+          max-height: none !important;
+          flex-direction: column !important;
+          padding: 36px 28px;
+          align-items: center;
+          text-align: center;
+          background-color: #ffffff;
+          border-radius: 16px;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          border: 1px solid #E2E8F0;
+          z-index: 10001;
+          animation: scaleUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes scaleUpModal {
+          from { transform: scale(0.9); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+
+        .status-icon-container {
+          margin-bottom: 16px;
+          display: flex;
+          justify-content: center;
+        }
+
+        .status-title {
+          font-family: 'Oswald', sans-serif;
+          font-size: 22px;
+          font-weight: 600;
+          color: #0F172A;
+          margin-bottom: 10px;
+          text-transform: uppercase;
+        }
+
+        .status-desc {
+          font-size: 13px;
+          color: #475569;
+          line-height: 1.5;
+          margin-bottom: 20px;
+          max-width: 340px;
+        }
+
+        .status-input-box {
+          display: flex;
+          align-items: center;
+          background-color: #F1F5F9;
+          border: 1px solid #E2E8F0;
+          border-radius: 8px;
+          padding: 0 14px;
+          height: 42px;
+          width: 100%;
+          margin-bottom: 16px;
+          font-size: 12.5px;
+          color: #334155;
+          gap: 10px;
+        }
+
+        .status-links-container {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          font-size: 12.5px;
+          color: #475569;
+          margin-bottom: 20px;
+          width: 100%;
+        }
+
+        .status-link-red {
+          color: #A30D11;
+          font-weight: 600;
+          text-decoration: none;
+        }
+        .status-link-red:hover {
+          text-decoration: underline;
+        }
+
+        .status-divider-line {
+          width: 100%;
+          height: 1px;
+          background-color: #E2E8F0;
+          margin: 6px 0 14px 0;
+        }
+
+        .status-action-btn {
+          width: 100%;
+          height: 42px;
+          background-color: #A30D11;
+          color: #ffffff;
+          border: none;
+          border-radius: 8px;
+          font-size: 12.5px;
+          font-weight: 700;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          transition: background-color 0.2s;
+        }
+        .status-action-btn:hover {
+          background-color: #890A0D;
         }
 
         /* PANEL IZQUIERDO HERO */
@@ -316,20 +439,6 @@ const Login = () => {
           position: relative;
           z-index: 2;
           color: #ffffff;
-        }
-
-        .highlight-text {
-          font-family: 'JetBrains Mono', monospace;
-          display: inline-block;
-          padding: 6px 14px;
-          background-color: rgba(255, 255, 255, 0.15);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 20px;
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 1px;
-          margin-bottom: 16px;
-          text-transform: uppercase;
         }
 
         .hero-title {
@@ -380,7 +489,6 @@ const Login = () => {
           border-radius: 2px;
         }
 
-        /* FORMULARIO E INPUTS */
         .login-form {
           display: flex;
           flex-direction: column;
@@ -474,10 +582,6 @@ const Login = () => {
           margin-left: 8px;
         }
 
-        .toggle-password:hover {
-          color: #0F172A;
-        }
-
         .submit-btn {
           width: 100%;
           height: 44px;
@@ -494,7 +598,7 @@ const Login = () => {
           justify-content: center;
           gap: 6px;
           margin-top: 4px;
-          transition: background-color 0.2s ease, transform 0.1s ease;
+          transition: background-color 0.2s ease;
           box-shadow: 0 4px 12px rgba(163, 13, 17, 0.2);
         }
 
@@ -502,11 +606,6 @@ const Login = () => {
           background-color: #890A0D;
         }
 
-        .submit-btn:active {
-          transform: scale(0.98);
-        }
-
-        /* SOCIAL LOGIN & FOOTER */
         .auth-social {
           display: flex;
           flex-direction: column;
@@ -560,7 +659,7 @@ const Login = () => {
           text-decoration: underline;
         }
 
-        /* WIDGET DE ACCESIBILIDAD FLOTANTE (CON ANIMACIONES Y HOVER) */
+        /* WIDGET DE ACCESIBILIDAD */
         .accessibility-widget-container {
           position: fixed;
           bottom: 24px;
@@ -585,21 +684,9 @@ const Login = () => {
           font-weight: 700;
           cursor: pointer;
           box-shadow: 0 6px 20px rgba(163, 13, 17, 0.4);
-          /* Transición fluida al pasar el mouse o hacer clic */
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .accessibility-toggle-btn:hover {
-          background-color: #890A0D;
-          transform: translateY(-3px) scale(1.05);
-          box-shadow: 0 8px 25px rgba(163, 13, 17, 0.5);
-        }
-
-        .accessibility-toggle-btn:active {
-          transform: translateY(0) scale(0.96);
-        }
-
-        /* MENÚ DESPLEGABLE CON ANIMACIONES DE APERTURA Y CIERRE */
         .accessibility-menu {
           position: absolute;
           bottom: 64px;
@@ -613,37 +700,6 @@ const Login = () => {
           display: flex;
           flex-direction: column;
           gap: 6px;
-          
-          /* Animación de entrada por defecto */
-          transform-origin: bottom right;
-          animation: menuOpenAnim 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        /* Clase para animar la salida al cerrar */
-        .accessibility-menu.closing {
-          animation: menuCloseAnim 0.2s cubic-bezier(0.4, 0, 1, 1) forwards;
-        }
-
-        @keyframes menuOpenAnim {
-          0% {
-            opacity: 0;
-            transform: translateY(12px) scale(0.92);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-
-        @keyframes menuCloseAnim {
-          0% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-          100% {
-            opacity: 0;
-            transform: translateY(12px) scale(0.92);
-          }
         }
 
         .accessibility-option {
@@ -660,31 +716,6 @@ const Login = () => {
           cursor: pointer;
           text-align: left;
           width: 100%;
-          transition: all 0.2s ease;
-        }
-
-        .accessibility-option:hover {
-          background-color: #FEF2F2;
-          border-color: #A30D11;
-          color: #A30D11;
-          transform: translateX(-3px);
-          box-shadow: 0 2px 8px rgba(163, 13, 17, 0.1);
-        }
-
-        .accessibility-option:active {
-          transform: translateX(-1px) scale(0.98);
-        }
-
-        .accessibility-option svg {
-          width: 16px;
-          height: 16px;
-          color: #A30D11;
-          flex-shrink: 0;
-          transition: transform 0.2s;
-        }
-
-        .accessibility-option:hover svg {
-          transform: scale(1.15);
         }
 
         @media (max-width: 860px) {
@@ -698,11 +729,9 @@ const Login = () => {
         }
       `}</style>
 
-      {/* FONDO DE PARTÍCULAS ESPACIALES Y RETÍCULA */}
       <div className="gridOverlay"></div>
       <RedSpaceBackground />
 
-      {/* 1. TOP HEADER */}
       <header className="top-header">
         <div className="brand-logo-container" onClick={() => navigate(-1)}>
           <button className="back-arrow-btn" aria-label="Volver">
@@ -713,11 +742,16 @@ const Login = () => {
           </button>
           <span className="brand-name">INKLUSPORT</span>
         </div>
+        <button className="user-icon-btn" aria-label="Perfil">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </button>
       </header>
 
-      {/* 2. CARD PRINCIPAL */}
+      {/* VISTA NORMAL: FORMULARIO DE LOGIN DE FONDO */}
       <div className="auth-card">
-        {/* PANEL IZQUIERDO HERO */}
         <div className="hero-panel">
           <div className="hero-overlay"></div>
           <div className="hero-content">
@@ -730,7 +764,6 @@ const Login = () => {
           </div>
         </div>
 
-        {/* PANEL DERECHO FORMULARIO */}
         <div className="form-panel">
           <div className="auth-header">
             <h2 className="auth-title">Iniciar Sesión</h2>
@@ -738,7 +771,6 @@ const Login = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="login-form">
-            {/* Correo Electrónico */}
             <div className="input-group">
               <label className="input-label">CORREO ELECTRÓNICO</label>
               <div className="input-box">
@@ -749,7 +781,7 @@ const Login = () => {
                 <input
                   type="email"
                   name="email"
-                  placeholder="juan@ejemplo.com"
+                  placeholder="admin@inklusport.com"
                   value={formData.email}
                   onChange={handleChange}
                   required
@@ -758,7 +790,6 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Contraseña */}
             <div className="input-group">
               <div className="input-header-row">
                 <label className="input-label">CONTRASEÑA</label>
@@ -774,7 +805,7 @@ const Login = () => {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
-                  placeholder="••••••••"
+                  placeholder="123456"
                   value={formData.password}
                   onChange={handleChange}
                   required
@@ -801,14 +832,11 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Botón Iniciar Sesión */}
             <button type="submit" className="submit-btn">
-              <span>ACCEDER </span>
-              
+              <span>ACCEDER</span>
             </button>
           </form>
 
-          {/* Social Login */}
           <div className="auth-social">
             <span className="auth-divider">O INICIA SESIÓN CON</span>
             <div className="social-buttons">
@@ -820,7 +848,6 @@ const Login = () => {
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
                 </svg>
               </button>
-
               <button type="button" className="social-btn" title="Apple ID">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="#000000">
                   <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.32c.62-.75 1.04-1.8 0.92-2.85-.9.04-2 .6-2.65 1.35-.58.67-1.09 1.75-.95 2.78 1.01.08 2.05-.53 2.68-1.28z"/>
@@ -829,7 +856,6 @@ const Login = () => {
             </div>
           </div>
 
-          {/* Enlace a Registro */}
           <div className="auth-footer">
             <p>
               ¿No tienes una cuenta?{' '}
@@ -841,31 +867,97 @@ const Login = () => {
         </div>
       </div>
 
-      {/* 3. BOTÓN FLOTANTE DE ACCESIBILIDAD CON ANIMACIONES */}
+      {/* VENTANA EMERGENTE (MODAL TIPO TOKEN): CREDENCIALES ACEPTADAS */}
+      {authStatus === 'success' && (
+        <div className="modal-backdrop">
+          <div className="auth-card-modal">
+            <div className="status-icon-container">
+              <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="9 12 11 14 15 10" />
+              </svg>
+            </div>
+            <h2 className="status-title">Credenciales aceptadas</h2>
+            <p className="status-desc">
+              Revisa tu correo electrónico y sigue las instrucciones para continuar.
+            </p>
+            <div className="status-input-box">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              <span>Correo enviado a {formData.email || 'juan.perez@gmail.com'}</span>
+            </div>
+            <div className="status-links-container">
+              <span>¿No encuentras el correo? <a href="#resend" className="status-link-red" onClick={(e) => { e.preventDefault(); alert('Correo reenviado'); }}>Reenviar correo</a></span>
+              <div className="status-divider-line"></div>
+              <span>¿Necesitas ayuda?</span>
+            </div>
+            <button className="status-action-btn" onClick={() => navigate('/home')}>
+              <span>Ir a inicio &gt;</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* VENTANA EMERGENTE (MODAL TIPO TOKEN): CREDENCIALES DENEGADAS */}
+      {authStatus === 'error' && (
+        <div className="modal-backdrop">
+          <div className="auth-card-modal">
+            <div className="status-icon-container">
+              <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#DC2626" strokeWidth="2.5">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="15" y1="9" x2="9" y2="15" />
+                <line x1="9" y1="9" x2="15" y2="15" />
+              </svg>
+            </div>
+            <h2 className="status-title">Credenciales Denegadas</h2>
+            <p className="status-desc">
+              El correo o la contraseña proporcionados no coinciden con nuestros registros. Revisa tu información.
+            </p>
+            <div className="status-input-box" style={{ backgroundColor: '#E2E8F0' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              <span>{formData.email || 'correo@ejemplo.com'} (intentado)</span>
+            </div>
+            <div className="status-links-container">
+              <span>¿Has olvidado tu contraseña? <a href="#recovery" className="status-link-red">Recuperar contraseña</a></span>
+              <div className="status-divider-line"></div>
+              <span>¿Necesitas ayuda?</span>
+            </div>
+            <button className="status-action-btn" onClick={() => setAuthStatus('idle')}>
+              <span>Reintentar &gt;</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="accessibility-widget-container">
         {isAccessibilityOpen && (
           <div className="accessibility-menu">
             <button className="accessibility-option" onClick={toggleContrast}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="16" height="16">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
               </svg>
               <span>{highContrast ? 'Contraste Normal' : 'Contraste'}</span>
             </button>
             <button className="accessibility-option" onClick={handleIncreaseFont}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="16" height="16">
                 <path d="M11 5L6 19M16 12H6M18 19V11M22 15h-8" />
               </svg>
               <span>Aumentar letra</span>
             </button>
             <button className="accessibility-option" onClick={handleDecreaseFont}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="16" height="16">
                 <path d="M11 5L6 19M16 12H6M15 15H9" />
               </svg>
               <span>Reducir letra</span>
             </button>
             <button className="accessibility-option" onClick={handleResetFont}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="16" height="16">
                 <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                 <path d="M3 3v5h5" />
               </svg>
