@@ -1,13 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
+// App.jsx - VERSIÓN CORREGIDA
+import React, { useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Login from './ui/pages/Login.jsx';
 import Register from './ui/pages/Register.jsx';
+import Home from './ui/pages/Home.jsx'; // <--- NUEVA IMPORTACIÓN DEL DASHBOARD
 import './styles/App.css';
 import logo from './ui/assets/logo.png';
 
 // =========================================================
-// TRANSICIÓN SUAVE DE PÁGINAS (SIN DESTELLOS NEGROS)
+// TRANSICIÓN SUAVE DE PÁGINAS
 // =========================================================
 const pageVariants = {
   initial: { opacity: 0 },
@@ -36,9 +38,7 @@ const AnimatedPage = ({ children }) => {
   );
 };
 
-// =========================================================
 // COMPONENTE: CAMPO ESPACIAL VISUAL DE PARTÍCULAS ROJAS
-// =========================================================
 const RedSpaceBackground = () => {
   const canvasRef = useRef(null);
 
@@ -62,15 +62,16 @@ const RedSpaceBackground = () => {
     const particleCount = 220;
 
     const redPalette = [
-      'rgba(163, 13, 17, ',   // Rojo Inklusport principal
-      'rgba(225, 29, 72, ',   // Rojo Rubí brillante
-      'rgba(244, 63, 94, ',   // Coral Neón
-      'rgba(255, 77, 77, ',   // Rojo Espacial Claro
-      'rgba(180, 20, 30, ',   // Rojo Profundo
+      'rgba(163, 13, 17, ',
+      'rgba(225, 29, 72, ',
+      'rgba(244, 63, 94, ',
+      'rgba(255, 77, 77, ',
+      'rgba(180, 20, 30, ',
     ];
 
     const initParticles = () => {
       particles = [];
+
       for (let i = 0; i < particleCount; i++) {
         const x = Math.random() * width;
         const y = Math.random() * height;
@@ -143,9 +144,7 @@ const RedSpaceBackground = () => {
   );
 };
 
-// =========================================================
-// COMPONENTE LANDING / BIENVENIDA (RAÍZ "/")
-// =========================================================
+// COMPONENTE LANDING (PÁGINA DE INICIO)
 const Landing = () => {
   const navigate = useNavigate();
 
@@ -163,15 +162,10 @@ const Landing = () => {
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
       `}</style>
 
-      {/* 1. RETÍCULA DE FONDO */}
       <div style={styles.gridOverlay}></div>
-
-      {/* 2. CAPA ESPACIAL DE PARTÍCULAS ROJAS */}
       <RedSpaceBackground />
 
-      {/* 3. TARJETA PRINCIPAL SPLIT */}
       <main style={styles.authCard}>
-        {/* PANEL IZQUIERDO HERO */}
         <div style={styles.heroPanel}>
           <div style={styles.heroOverlay}></div>
           <div style={styles.heroContent}>
@@ -185,7 +179,6 @@ const Landing = () => {
           </div>
         </div>
 
-        {/* PANEL DERECHO ACCIONES */}
         <div style={styles.formPanel}>
           <div style={styles.cardHeader}>
             <div style={styles.logoFrame}>
@@ -206,7 +199,7 @@ const Landing = () => {
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#890A0D')}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#A30D11')}
             >
-              Iniciar sesión <span style={{ marginLeft: '4px' }}>&gt;</span>
+              Iniciar sesión
             </motion.button>
 
             <motion.button
@@ -227,7 +220,6 @@ const Landing = () => {
                   <path d="M19 11v6m3-3h-6" />
                 </svg>
                 <span>Registrarse</span>
-                <span style={{ marginLeft: '4px' }}>&gt;</span>
               </div>
             </motion.button>
           </div>
@@ -263,8 +255,246 @@ const Landing = () => {
 };
 
 // =========================================================
-// COMPONENTE HOME (DASHBOARD PRINCIPAL CON MENÚ LATERAL)
+// COMPONENTE PRINCIPAL CON ENRUTAMIENTO
 // =========================================================
+function App() {
+  const location = useLocation();
 
+  return (
+    <AnimatePresence mode="popLayout">
+      <Routes location={location} key={location.pathname}>
+        {/* Landing */}
+        <Route path="/" element={<AnimatedPage><Landing /></AnimatedPage>} />
+        
+        {/* Login y Register */}
+        <Route path="/login" element={<AnimatedPage><Login /></AnimatedPage>} />
+        <Route path="/register" element={<AnimatedPage><Register /></AnimatedPage>} />
+        
+        {/* Dashboard - Home (NUEVO) */}
+        <Route path="/home" element={<AnimatedPage><Home /></AnimatedPage>} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
+// ============================================
+// ESTILOS DEL LANDING
+// ============================================
+const styles = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100vw',
+    height: '100vh',
+    backgroundColor: '#F8FAFC',
+    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    margin: 0,
+    padding: '20px 40px',
+    boxSizing: 'border-box',
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    overflow: 'hidden',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    zIndex: 9999,
+  },
+  gridOverlay: {
+    position: 'absolute',
+    inset: 0,
+    backgroundImage:
+      'linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px)',
+    backgroundSize: '36px 36px',
+    zIndex: 1,
+    pointerEvents: 'none',
+  },
+  authCard: {
+    display: 'flex',
+    width: '100%',
+    maxWidth: '950px',
+    height: 'calc(100vh - 100px)',
+    maxHeight: '600px',
+    backgroundColor: '#ffffff',
+    borderRadius: '20px',
+    boxShadow: '0 20px 40px rgba(15, 23, 42, 0.08)',
+    overflow: 'hidden',
+    margin: 'auto',
+    zIndex: 5,
+    border: '1px solid #E2E8F0',
+  },
+  heroPanel: {
+    flex: 1.1,
+    position: 'relative',
+    backgroundColor: '#A30D11',
+    backgroundImage: 'url("https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1000&auto=format&fit=crop")',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundBlendMode: 'multiply',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    padding: '40px',
+  },
+  heroOverlay: {
+    position: 'absolute',
+    inset: 0,
+    backgroundColor: '#A30D11',
+    opacity: 0.88,
+    zIndex: 1,
+  },
+  heroContent: {
+    position: 'relative',
+    zIndex: 2,
+    color: '#ffffff',
+  },
+  highlightText: {
+    fontFamily: "'JetBrains Mono', monospace",
+    display: 'inline-block',
+    padding: '6px 14px',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    border: '1px solid rgba(255, 255, 255, 0.2)',
+    borderRadius: '20px',
+    fontSize: '10px',
+    fontWeight: '700',
+    letterSpacing: '1px',
+    marginBottom: '16px',
+    textTransform: 'uppercase',
+  },
+  heroTitle: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '32px',
+    fontWeight: '700',
+    lineHeight: '1.15',
+    margin: '0 0 14px 0',
+    letterSpacing: '-0.3px',
+    textTransform: 'uppercase',
+  },
+  heroDesc: {
+    fontSize: '13px',
+    lineHeight: '1.5',
+    color: 'rgba(255, 255, 255, 0.9)',
+    maxWidth: '310px',
+    margin: 0,
+  },
+  formPanel: {
+    flex: 1.1,
+    padding: '40px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    textAlign: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  cardHeader: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '100%',
+  },
+  logoFrame: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: '10px',
+  },
+  logo: {
+    width: '100%',
+    maxWidth: '165px',
+    height: 'auto',
+    objectFit: 'contain',
+    display: 'block',
+  },
+  cardTitle: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '26px',
+    fontWeight: '700',
+    color: '#0F172A',
+    margin: '0 0 8px 0',
+    textTransform: 'uppercase',
+    letterSpacing: '0.2px',
+  },
+  titleLine: {
+    width: '36px',
+    height: '3px',
+    backgroundColor: '#A30D11',
+    borderRadius: '2px',
+    marginBottom: '14px',
+  },
+  cardSubtitle: {
+    fontSize: '13px',
+    color: '#64748B',
+    margin: 0,
+    lineHeight: '1.5',
+    maxWidth: '280px',
+  },
+  buttonGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    width: '100%',
+    maxWidth: '320px',
+  },
+  loginButton: {
+    width: '100%',
+    padding: '13px 0',
+    backgroundColor: '#A30D11',
+    color: '#FFFFFF',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '13px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    boxShadow: '0 4px 12px rgba(163, 13, 17, 0.2)',
+    letterSpacing: '0.5px',
+  },
+  registerButton: {
+    width: '100%',
+    padding: '13px 0',
+    backgroundColor: '#FFFFFF',
+    color: '#A30D11',
+    border: '1px solid #A30D11',
+    borderRadius: '8px',
+    fontSize: '13px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    letterSpacing: '0.5px',
+  },
+  authSocial: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '100%',
+  },
+  authDivider: {
+    fontSize: '9px',
+    fontWeight: '800',
+    color: '#94A3B8',
+    letterSpacing: '0.8px',
+    marginBottom: '12px',
+    position: 'relative',
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  socialButtons: {
+    display: 'flex',
+    gap: '12px',
+    justifyContent: 'center',
+  },
+  socialBtn: {
+    width: '42px',
+    height: '38px',
+    backgroundColor: '#FFFFFF',
+    border: '1px solid #E2E8F0',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    transition: 'background-color 0.2s, border-color 0.2s',
+  },
+};
 
 export default App;

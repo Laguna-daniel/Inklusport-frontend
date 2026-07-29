@@ -115,8 +115,9 @@ const Login = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   
-  // Estado para controlar las vistas de resultado: 'idle' | 'success' | 'error'
+  // Estado para controlar las vistas de resultado: 'idle' | 'success' | 'error' | 'forgot' | 'forgot-success'
   const [authStatus, setAuthStatus] = useState('idle');
+  const [forgotEmail, setForgotEmail] = useState('');
 
   // Estados de Accesibilidad
   const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
@@ -136,7 +137,7 @@ const Login = () => {
     
     // USUARIO DE EJEMPLO PARA EL BOCETO
     const usuarioEjemplo = {
-      email: "admin@inklusport.com",
+      email: "laguna@gmail.com",
       password: "123456"
     };
 
@@ -145,6 +146,13 @@ const Login = () => {
       setAuthStatus('success');
     } else {
       setAuthStatus('error');
+    }
+  };
+
+  const handleForgotSubmit = (e) => {
+    e.preventDefault();
+    if (forgotEmail.trim()) {
+      setAuthStatus('forgot-success');
     }
   };
 
@@ -380,6 +388,12 @@ const Login = () => {
           color: #A30D11;
           font-weight: 600;
           text-decoration: none;
+          background: none;
+          border: none;
+          cursor: pointer;
+          font-family: inherit;
+          font-size: inherit;
+          padding: 0;
         }
         .status-link-red:hover {
           text-decoration: underline;
@@ -524,6 +538,11 @@ const Login = () => {
           color: #A30D11;
           text-decoration: none;
           font-weight: 600;
+          background: none;
+          border: none;
+          cursor: pointer;
+          font-family: inherit;
+          padding: 0;
         }
 
         .forgot-link:hover {
@@ -793,9 +812,9 @@ const Login = () => {
             <div className="input-group">
               <div className="input-header-row">
                 <label className="input-label">CONTRASEÑA</label>
-                <a href="#forgot" className="forgot-link">
+                <button type="button" className="forgot-link" onClick={() => setAuthStatus('forgot')}>
                   ¿Olvidaste tu contraseña?
-                </a>
+                </button>
               </div>
               <div className="input-box">
                 <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -867,6 +886,83 @@ const Login = () => {
         </div>
       </div>
 
+      {/* VENTANA EMERGENTE: RECUPERACIÓN DE CONTRASEÑA */}
+      {authStatus === 'forgot' && (
+        <div className="modal-backdrop">
+          <div className="auth-card-modal">
+            <div className="status-icon-container">
+              <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#A30D11" strokeWidth="2.5">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                <polyline points="9 16 11 18 15 14" />
+              </svg>
+            </div>
+            <h2 className="status-title">Recuperación de Contraseña</h2>
+            <p className="status-desc">
+              Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
+            </p>
+            <form onSubmit={handleForgotSubmit} style={{ width: '100%' }}>
+              <div className="status-input-box" style={{ backgroundColor: '#F8FAFC' }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+                <input
+                  type="email"
+                  placeholder="juan.perez@gmail.com"
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  required
+                  style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%', fontSize: '12.5px', color: '#1E293B' }}
+                />
+              </div>
+              <button type="submit" className="status-action-btn" style={{ marginBottom: '14px' }}>
+                <span>ENVIAR ENLACE &gt;</span>
+              </button>
+            </form>
+            <div className="status-links-container" style={{ alignItems: 'center' }}>
+              <div className="status-divider-line"></div>
+              <button type="button" className="status-link-red" onClick={() => setAuthStatus('idle')}>
+                Volver al inicio de sesión
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* VENTANA EMERGENTE: CORREO DE RECUPERACIÓN ENVIADO (TOKEN) */}
+      {authStatus === 'forgot-success' && (
+        <div className="modal-backdrop">
+          <div className="auth-card-modal">
+            <div className="status-icon-container">
+              <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5">
+                <polyline points="9 11 12 14 22 4" />
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+              </svg>
+            </div>
+            <h2 className="status-title">Revisa tu correo</h2>
+            <p className="status-desc">
+              Hemos enviado un enlace de recuperación a tu correo. Sigue las instrucciones para restablecer tu contraseña.
+            </p>
+            <div className="status-input-box">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              <span>Enlace enviado a {forgotEmail}</span>
+            </div>
+            <div className="status-links-container">
+              <span>¿No recibiste el correo? <button type="button" className="status-link-red" onClick={() => alert('Correo de recuperación reenviado')}>Reenviar correo</button></span>
+              <div className="status-divider-line"></div>
+              <span>¿Recordaste tu contraseña? <button type="button" className="status-link-red" onClick={() => setAuthStatus('idle')}>Iniciar sesión</button></span>
+            </div>
+            <button className="status-action-btn" onClick={() => setAuthStatus('idle')}>
+              <span>Aceptar &gt;</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* VENTANA EMERGENTE (MODAL TIPO TOKEN): CREDENCIALES ACEPTADAS */}
       {authStatus === 'success' && (
         <div className="modal-backdrop">
@@ -889,7 +985,7 @@ const Login = () => {
               <span>Correo enviado a {formData.email || 'juan.perez@gmail.com'}</span>
             </div>
             <div className="status-links-container">
-              <span>¿No encuentras el correo? <a href="#resend" className="status-link-red" onClick={(e) => { e.preventDefault(); alert('Correo reenviado'); }}>Reenviar correo</a></span>
+              <span>¿No encuentras el correo? <button type="button" className="status-link-red" onClick={() => alert('Correo reenviado')}>Reenviar correo</button></span>
               <div className="status-divider-line"></div>
               <span>¿Necesitas ayuda?</span>
             </div>
@@ -923,7 +1019,7 @@ const Login = () => {
               <span>{formData.email || 'correo@ejemplo.com'} (intentado)</span>
             </div>
             <div className="status-links-container">
-              <span>¿Has olvidado tu contraseña? <a href="#recovery" className="status-link-red">Recuperar contraseña</a></span>
+              <span>¿Has olvidado tu contraseña? <button type="button" className="status-link-red" onClick={() => setAuthStatus('forgot')}>Recuperar contraseña</button></span>
               <div className="status-divider-line"></div>
               <span>¿Necesitas ayuda?</span>
             </div>

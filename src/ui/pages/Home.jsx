@@ -1,7 +1,12 @@
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+
 const Home = () => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeMenu, setActiveMenu] = useState('Calendar'); // Por defecto seleccionado Calendar como en tu imagen
+  const [activeMenu, setActiveMenu] = useState('Calendar');
 
   const usuarioActivo = {
     nombre: "User Name",
@@ -26,7 +31,7 @@ const Home = () => {
             <span style={homeStyles.hamburgerLine}></span>
             <span style={homeStyles.hamburgerLine}></span>
           </button>
-          <a href="" style={homeStyles.brandLogo}>INKLUSPORT</a>
+          <a href="#" style={homeStyles.brandLogo} onClick={(e) => e.preventDefault()}>INKLUSPORT</a>
         </div>
         <div style={homeStyles.navRight}>
           <div style={homeStyles.userInfoText}>
@@ -34,18 +39,18 @@ const Home = () => {
             <div style={homeStyles.userNameText}>{usuarioActivo.nombre}</div>
           </div>
           <div style={homeStyles.userAvatarBtn} onClick={handleLogout} title="Cerrar Sesión">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E11D48" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E11D48" strokeWidth="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
           </div>
         </div>
       </header>
 
-      {/* ========================================================= */}
-      {/* MENÚ LATERAL DESLIZABLE (SIDEBAR GRANDE CON ANIMACIÓN)     */}
-      {/* ========================================================= */}
+      {/* MENÚ LATERAL DESLIZABLE */}
       <AnimatePresence>
         {sidebarOpen && (
           <>
-            {/* Backdrop oscuro translúcido */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.5 }}
@@ -54,7 +59,6 @@ const Home = () => {
               style={homeStyles.sidebarBackdrop}
             />
 
-            {/* Panel Lateral Desplegable */}
             <motion.aside
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
@@ -62,7 +66,6 @@ const Home = () => {
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               style={homeStyles.sidebarPanel}
             >
-              {/* Botón de cierre superior derecho */}
               <button 
                 style={homeStyles.closeSidebarBtn} 
                 onClick={() => setSidebarOpen(false)}
@@ -71,18 +74,17 @@ const Home = () => {
                 ✕
               </button>
 
-              {/* Encabezado del Menú Lateral (Avatar + Nombre + Rol) */}
               <div style={homeStyles.sidebarProfileSection}>
                 <div style={homeStyles.sidebarAvatarBox}>
-                  <svg width="54" height="54" viewBox="0 0 24 24" fill="#0D9488"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                  <svg width="54" height="54" viewBox="0 0 24 24" fill="#0D9488">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                  </svg>
                 </div>
                 <h3 style={homeStyles.sidebarUserName}>{usuarioActivo.nombre}</h3>
                 <p style={homeStyles.sidebarUserRole}>{usuarioActivo.rol}</p>
               </div>
 
-              {/* Opciones del Menú Lateral */}
               <div style={homeStyles.sidebarNavList}>
-                
                 <div 
                   style={{
                     ...homeStyles.sidebarNavItem, 
@@ -90,7 +92,10 @@ const Home = () => {
                   }}
                   onClick={() => { setActiveMenu('Home'); setSidebarOpen(false); alert('Ir a Home'); }}
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                  </svg>
                   <span>Home</span>
                 </div>
 
@@ -101,7 +106,12 @@ const Home = () => {
                   }}
                   onClick={() => { setActiveMenu('Events'); setSidebarOpen(false); alert('Ir a Events'); }}
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
                   <span>Events</span>
                 </div>
 
@@ -112,7 +122,12 @@ const Home = () => {
                   }}
                   onClick={() => { setActiveMenu('Calendar'); setSidebarOpen(false); alert('Ir a Calendar'); }}
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
                   <span>Calendar</span>
                 </div>
 
@@ -123,7 +138,10 @@ const Home = () => {
                   }}
                   onClick={() => { setActiveMenu('Profile'); setSidebarOpen(false); alert('Ir a Profile'); }}
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
                   <span>Profile</span>
                 </div>
 
@@ -134,7 +152,10 @@ const Home = () => {
                   }}
                   onClick={() => { setActiveMenu('Accessibility'); setSidebarOpen(false); alert('Ir a Accessibility'); }}
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="4" r="2"/><path d="M12 6v6m0 0v6m-4-8h8"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="4" r="2"/>
+                    <path d="M12 6v6m0 0v6m-4-8h8"/>
+                  </svg>
                   <span>Accessibility</span>
                 </div>
 
@@ -145,10 +166,13 @@ const Home = () => {
                   }}
                   onClick={() => { setActiveMenu('AI Assistant'); setSidebarOpen(false); alert('Ir a AI Assistant'); }}
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></svg>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="11" width="18" height="10" rx="2"/>
+                    <circle cx="12" cy="5" r="2"/>
+                    <path d="M12 7v4"/>
+                  </svg>
                   <span>AI Assistant</span>
                 </div>
-
               </div>
             </motion.aside>
           </>
@@ -157,8 +181,6 @@ const Home = () => {
 
       {/* CONTENIDO DE LA VISTA */}
       <main style={homeStyles.dashboardContent}>
-        
-        {/* BANNER INICIAL */}
         <div style={homeStyles.welcomeBanner}>
           <div style={homeStyles.welcomeTitleGroup}>
             <h1 style={homeStyles.welcomeH1}>Ready to <span style={{ color: '#E11D48' }}>Push</span> Your Limits?</h1>
@@ -169,12 +191,16 @@ const Home = () => {
           </button>
         </div>
 
-        {/* 4 TARJETAS DE MÉTRICAS */}
         <div style={homeStyles.statsTopGrid}>
           <div style={homeStyles.statBox}>
             <div style={homeStyles.statBoxHeader}>
               <span style={homeStyles.statBoxTitle}>NEXT EVENT</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E11D48" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E11D48" strokeWidth="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
             </div>
             <div>
               <div style={{ fontFamily: 'Oswald', fontSize: '18px', fontWeight: '600', color: '#0F172A', lineHeight: '1.2' }}>Maratón Adaptada CDMX</div>
@@ -185,7 +211,10 @@ const Home = () => {
           <div style={homeStyles.statBox}>
             <div style={homeStyles.statBoxHeader}>
               <span style={homeStyles.statBoxTitle}>MY ACTIVITIES</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2">
+                <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+                <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+              </svg>
             </div>
             <div>
               <div style={homeStyles.statBoxValueLarge}>08</div>
@@ -196,7 +225,9 @@ const Home = () => {
           <div style={homeStyles.statBox}>
             <div style={homeStyles.statBoxHeader}>
               <span style={homeStyles.statBoxTitle}>AI INJURY RISK</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0D9488" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0D9488" strokeWidth="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
             </div>
             <div>
               <div style={homeStyles.riskBadgeLow}>Low</div>
@@ -208,7 +239,9 @@ const Home = () => {
           <div style={homeStyles.statBox}>
             <div style={homeStyles.statBoxHeader}>
               <span style={homeStyles.statBoxTitle}>STREAK</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E11D48" strokeWidth="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.5 4 6.5 2 2 3 3.5 3 5.5a6 6 0 1 1-12 0c0-1.03.23-2 .63-2.87Z"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E11D48" strokeWidth="2">
+                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.5 4 6.5 2 2 3 3.5 3 5.5a6 6 0 1 1-12 0c0-1.03.23-2 .63-2.87Z"/>
+              </svg>
             </div>
             <div>
               <div style={homeStyles.statBoxValueLarge}>12 <span style={{ fontSize: '14px', fontWeight: '500', color: '#64748B' }}>Days</span></div>
@@ -217,19 +250,15 @@ const Home = () => {
           </div>
         </div>
 
-        {/* DISEÑO DE 2 COLUMNAS (EVENTOS + CALENDARIO/IA) */}
         <div style={homeStyles.mainGridLayout}>
-          
-          {/* IZQUIERDA: EVENTOS RECOMENDADOS */}
           <div style={homeStyles.eventsSection}>
             <div style={homeStyles.sectionHeaderRow}>
               <h3 style={homeStyles.sectionTitle}>Eventos Recomendados para ti</h3>
               <span style={homeStyles.seeAllLink} onClick={() => alert('Ver todos los eventos')}>SEE ALL</span>
             </div>
 
-            {/* Evento 1 */}
             <div style={homeStyles.eventCard}>
-              <div style={{ ...homeStyles.eventImageContainer, backgroundImage: `url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=600&auto=format&fit=crop')` }}>
+              <div style={{ ...homeStyles.eventImageContainer, backgroundImage: 'url("https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=600&auto=format&fit=crop")' }}>
                 <span style={homeStyles.eventTagPill}>PARA-SPORT</span>
               </div>
               <div style={homeStyles.eventCardBody}>
@@ -237,15 +266,26 @@ const Home = () => {
                   <h4 style={homeStyles.eventCardTitle}>Clínica de Baloncesto en Silla</h4>
                   <div style={homeStyles.eventMetaList}>
                     <div style={homeStyles.eventMetaItem}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                      </svg>
                       <span>15 Nov, 2023</span>
                     </div>
                     <div style={homeStyles.eventMetaItem}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                      </svg>
                       <span>10:00 AM</span>
                     </div>
                     <div style={homeStyles.eventMetaItem}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                      </svg>
                       <span>Gimnasio Central</span>
                     </div>
                   </div>
@@ -257,9 +297,8 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Evento 2 */}
             <div style={homeStyles.eventCard}>
-              <div style={{ ...homeStyles.eventImageContainer, backgroundImage: `url('https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=600&auto=format&fit=crop')` }}>
+              <div style={{ ...homeStyles.eventImageContainer, backgroundImage: 'url("https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=600&auto=format&fit=crop")' }}>
                 <span style={homeStyles.eventTagPill}>WELLNESS</span>
               </div>
               <div style={homeStyles.eventCardBody}>
@@ -267,15 +306,26 @@ const Home = () => {
                   <h4 style={homeStyles.eventCardTitle}>Yoga Adaptativo y Mindfulness</h4>
                   <div style={homeStyles.eventMetaList}>
                     <div style={homeStyles.eventMetaItem}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                      </svg>
                       <span>18 Nov, 2023</span>
                     </div>
                     <div style={homeStyles.eventMetaItem}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                      </svg>
                       <span>08:30 AM</span>
                     </div>
                     <div style={homeStyles.eventMetaItem}>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                      </svg>
                       <span>Sala de Meditación</span>
                     </div>
                   </div>
@@ -286,13 +336,9 @@ const Home = () => {
                 </div>
               </div>
             </div>
-
           </div>
 
-          {/* DERECHA: CALENDARIO Y ASISTENTE VIRTUAL */}
           <div style={homeStyles.rightSidebarColumn}>
-            
-            {/* MINI CALENDARIO */}
             <div style={homeStyles.widgetCard}>
               <div style={homeStyles.calendarHeaderRow}>
                 <span style={homeStyles.calendarTitle}>Mi Calendario</span>
@@ -337,12 +383,14 @@ const Home = () => {
               </div>
             </div>
 
-            {/* ASISTENTE VIRTUAL */}
             <div style={homeStyles.widgetCard}>
               <div style={homeStyles.aiAssistantHeader}>
                 <span style={homeStyles.aiAssistantTitle}>Asistente Virtual</span>
                 <div style={homeStyles.aiIconBadge}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                  </svg>
                 </div>
               </div>
               
@@ -364,252 +412,11 @@ const Home = () => {
                 HABLAR CON IA
               </button>
             </div>
-
           </div>
-
         </div>
-
       </main>
     </div>
   );
-};
-
-// =========================================================
-// COMPONENTE PRINCIPAL CON ENRUTAMIENTO Y TRANSICIONES
-// =========================================================
-function App() {
-  const location = useLocation();
-
-  return (
-    <AnimatePresence mode="popLayout">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<AnimatedPage><Landing /></AnimatedPage>} />
-        <Route path="/login" element={<AnimatedPage><Login /></AnimatedPage>} />
-        <Route path="/register" element={<AnimatedPage><Register /></AnimatedPage>} />
-        <Route path="/home" element={<AnimatedPage><Home /></AnimatedPage>} />
-      </Routes>
-    </AnimatePresence>
-  );
-}
-
-// ============================================
-// ESTILOS DE LANDING Y GENERALES
-// ============================================
-const styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: '100vw',
-    height: '100vh',
-    backgroundColor: '#F8FAFC',
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    margin: 0,
-    padding: '20px 40px',
-    boxSizing: 'border-box',
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    overflow: 'hidden',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    zIndex: 9999,
-  },
-  gridOverlay: {
-    position: 'absolute',
-    inset: 0,
-    backgroundImage:
-      'linear-gradient(rgba(148, 163, 184, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.05) 1px, transparent 1px)',
-    backgroundSize: '36px 36px',
-    zIndex: 1,
-    pointerEvents: 'none',
-  },
-  authCard: {
-    display: 'flex',
-    width: '100%',
-    maxWidth: '950px',
-    height: 'calc(100vh - 100px)',
-    maxHeight: '600px',
-    backgroundColor: '#ffffff',
-    borderRadius: '20px',
-    boxShadow: '0 20px 40px rgba(15, 23, 42, 0.08)',
-    overflow: 'hidden',
-    margin: 'auto',
-    zIndex: 5,
-    border: '1px solid #E2E8F0',
-  },
-  heroPanel: {
-    flex: 1.1,
-    position: 'relative',
-    backgroundColor: '#A30D11',
-    backgroundImage: 'url("https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1000&auto=format&fit=crop")',
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundBlendMode: 'multiply',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    padding: '40px',
-  },
-  heroOverlay: {
-    position: 'absolute',
-    inset: 0,
-    backgroundColor: '#A30D11',
-    opacity: 0.88,
-    zIndex: 1,
-  },
-  heroContent: {
-    position: 'relative',
-    zIndex: 2,
-    color: '#ffffff',
-  },
-  highlightText: {
-    fontFamily: "'JetBrains Mono', monospace",
-    display: 'inline-block',
-    padding: '6px 14px',
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-    borderRadius: '20px',
-    fontSize: '10px',
-    fontWeight: '700',
-    letterSpacing: '1px',
-    marginBottom: '16px',
-    textTransform: 'uppercase',
-  },
-  heroTitle: {
-    fontFamily: "'Oswald', sans-serif",
-    fontSize: '32px',
-    fontWeight: '700',
-    lineHeight: '1.15',
-    margin: '0 0 14px 0',
-    letterSpacing: '-0.3px',
-    textTransform: 'uppercase',
-  },
-  heroDesc: {
-    fontSize: '13px',
-    lineHeight: '1.5',
-    color: 'rgba(255, 255, 255, 0.9)',
-    maxWidth: '310px',
-    margin: 0,
-  },
-  formPanel: {
-    flex: 1.1,
-    padding: '40px',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    textAlign: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-  cardHeader: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '100%',
-  },
-  logoFrame: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: '10px',
-  },
-  logo: {
-    width: '100%',
-    maxWidth: '165px',
-    height: 'auto',
-    objectFit: 'contain',
-    display: 'block',
-  },
-  cardTitle: {
-    fontFamily: "'Oswald', sans-serif",
-    fontSize: '26px',
-    fontWeight: '700',
-    color: '#0F172A',
-    margin: '0 0 8px 0',
-    textTransform: 'uppercase',
-    letterSpacing: '0.2px',
-  },
-  titleLine: {
-    width: '36px',
-    height: '3px',
-    backgroundColor: '#A30D11',
-    borderRadius: '2px',
-    marginBottom: '14px',
-  },
-  cardSubtitle: {
-    fontSize: '13px',
-    color: '#64748B',
-    margin: 0,
-    lineHeight: '1.5',
-    maxWidth: '280px',
-  },
-  buttonGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-    width: '100%',
-    maxWidth: '320px',
-  },
-  loginButton: {
-    width: '100%',
-    padding: '13px 0',
-    backgroundColor: '#A30D11',
-    color: '#FFFFFF',
-    border: 'none',
-    borderRadius: '8px',
-    fontSize: '13px',
-    fontWeight: '700',
-    cursor: 'pointer',
-    boxShadow: '0 4px 12px rgba(163, 13, 17, 0.2)',
-    letterSpacing: '0.5px',
-  },
-  registerButton: {
-    width: '100%',
-    padding: '13px 0',
-    backgroundColor: '#FFFFFF',
-    color: '#A30D11',
-    border: '1px solid #A30D11',
-    borderRadius: '8px',
-    fontSize: '13px',
-    fontWeight: '700',
-    cursor: 'pointer',
-    letterSpacing: '0.5px',
-  },
-  authSocial: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '100%',
-  },
-  authDivider: {
-    fontSize: '9px',
-    fontWeight: '800',
-    color: '#94A3B8',
-    letterSpacing: '0.8px',
-    marginBottom: '12px',
-    position: 'relative',
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  socialButtons: {
-    display: 'flex',
-    gap: '12px',
-    justifyContent: 'center',
-  },
-  socialBtn: {
-    width: '42px',
-    height: '38px',
-    backgroundColor: '#FFFFFF',
-    border: '1px solid #E2E8F0',
-    borderRadius: '8px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'pointer',
-    transition: 'background-color 0.2s, border-color 0.2s',
-  },
 };
 
 // ============================================
@@ -666,22 +473,6 @@ const homeStyles = {
     letterSpacing: '0.5px',
     textDecoration: 'none',
   },
-  navLinks: {
-    display: 'flex',
-    gap: '28px',
-    listStyle: 'none',
-  },
-  navLink: {
-    textDecoration: 'none',
-    fontSize: '14px',
-    fontWeight: '500',
-    color: '#64748B',
-    cursor: 'pointer',
-  },
-  navLinkActive: {
-    color: '#A30D11',
-    fontWeight: '700',
-  },
   navRight: {
     display: 'flex',
     alignItems: 'center',
@@ -712,7 +503,6 @@ const homeStyles = {
     justifyContent: 'center',
     cursor: 'pointer',
   },
-  // ESTILOS DEL SIDEBAR
   sidebarBackdrop: {
     position: 'fixed',
     inset: 0,
@@ -1137,3 +927,4 @@ const homeStyles = {
   },
 };
 
+export default Home;
