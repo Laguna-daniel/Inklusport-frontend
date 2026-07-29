@@ -917,7 +917,7 @@ const Login = () => {
                 />
               </div>
               <button type="submit" className="status-action-btn" style={{ marginBottom: '14px' }}>
-                <span>ENVIAR ENLACE &gt;</span>
+                <span>ENVIAR ENLACE </span>
               </button>
             </form>
             <div className="status-links-container" style={{ alignItems: 'center' }}>
@@ -957,7 +957,7 @@ const Login = () => {
               <span>¿Recordaste tu contraseña? <button type="button" className="status-link-red" onClick={() => setAuthStatus('idle')}>Iniciar sesión</button></span>
             </div>
             <button className="status-action-btn" onClick={() => setAuthStatus('idle')}>
-              <span>Aceptar &gt;</span>
+              <span>Aceptar </span>
             </button>
           </div>
         </div>
@@ -990,7 +990,7 @@ const Login = () => {
               <span>¿Necesitas ayuda?</span>
             </div>
             <button className="status-action-btn" onClick={() => navigate('/home')}>
-              <span>Ir a inicio &gt;</span>
+              <span>Ir a inicio </span>
             </button>
           </div>
         </div>
@@ -1024,7 +1024,7 @@ const Login = () => {
               <span>¿Necesitas ayuda?</span>
             </div>
             <button className="status-action-btn" onClick={() => setAuthStatus('idle')}>
-              <span>Reintentar &gt;</span>
+              <span>Reintentar </span>
             </button>
           </div>
         </div>
