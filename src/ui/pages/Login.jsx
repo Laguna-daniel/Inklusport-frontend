@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../domain/contexts/AuthContext'
 
 // COMPONENTE: FONDO ESPACIAL DE PARTÍCULAS ROJAS (FONDO CLARO)
 const RedSpaceBackground = () => {
@@ -109,15 +110,23 @@ const RedSpaceBackground = () => {
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login, user } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState('');
   
   // Estado para controlar las vistas de resultado: 'idle' | 'success' | 'error' | 'forgot' | 'forgot-success'
   const [authStatus, setAuthStatus] = useState('idle');
   const [forgotEmail, setForgotEmail] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      navigate('/home');
+    }
+  }, [user, navigate]);
 
   // Estados de Accesibilidad
   const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
@@ -132,20 +141,20 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // USUARIO DE EJEMPLO PARA EL BOCETO
-    const usuarioEjemplo = {
-      email: "laguna@gmail.com",
-      password: "123456"
-    };
+    setLoginError('');
 
-    // Validar credenciales de prueba
-    if (formData.email === usuarioEjemplo.email && formData.password === usuarioEjemplo.password) {
+    const result = await login({
+      email: formData.email,
+      password: formData.password,
+    });
+
+    if (result.success) {
       setAuthStatus('success');
     } else {
       setAuthStatus('error');
+      setLoginError(result.error);
     }
   };
 
@@ -917,7 +926,7 @@ const Login = () => {
                 />
               </div>
               <button type="submit" className="status-action-btn" style={{ marginBottom: '14px' }}>
-                <span>ENVIAR ENLACE </span>
+                <span>ENVIAR ENLACE</span>
               </button>
             </form>
             <div className="status-links-container" style={{ alignItems: 'center' }}>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../domain/contexts/AuthContext'
 
 // COMPONENTE: FONDO ESPACIAL DE PARTÍCULAS ROJAS (FONDO CLARO)
 const RedSpaceBackground = () => {
@@ -109,6 +110,7 @@ const RedSpaceBackground = () => {
 
 const Register = () => {
   const navigate = useNavigate();
+  const { register, user } = useAuth();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -121,6 +123,13 @@ const Register = () => {
   
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      navigate('/home');
+    }
+  }, [user, navigate]);
 
   // Estados de Accesibilidad
   const [isAccessibilityOpen, setIsAccessibilityOpen] = useState(false);
@@ -135,9 +144,48 @@ const Register = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Registro de usuario:', formData);
+    setErrorMessage('');
+
+    if (!formData.fullName || formData.fullName.trim().length < 3) {
+      setErrorMessage('El nombre completo debe tener al menos 3 caracteres.')
+      return
+    }
+
+    if (!formData.email || !formData.email.includes('@')) {
+      setErrorMessage('Ingresa un correo electrónico válido.')
+      return
+    }
+
+    if (formData.password.length < 6) {
+      setErrorMessage('La contraseña debe tener al menos 6 caracteres.')
+      return
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setErrorMessage('Las contraseñas no coinciden.')
+      return
+    }
+
+    if (!formData.acceptTerms) {
+      setErrorMessage('Debes aceptar los términos y condiciones para continuar.')
+      return
+    }
+
+    const result = await register({
+      fullName: formData.fullName.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim(),
+      disabilityType: formData.disabilityType,
+      password: formData.password,
+    })
+
+    if (result.success) {
+      navigate('/home')
+    } else {
+      setErrorMessage(result.error)
+    }
   };
 
   const handleIncreaseFont = () => {
@@ -907,6 +955,21 @@ const Register = () => {
                 Acepto los <a href="#terms" className="terms-link">Términos y Condiciones</a> y la <a href="#privacy" className="terms-link">Política de Privacidad</a> de INKLUSPORT.
               </label>
             </div>
+
+            {errorMessage && (
+              <div style={{
+                width: '100%',
+                backgroundColor: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '10px',
+                padding: '14px 16px',
+                color: '#b91c1c',
+                fontWeight: 600,
+                marginBottom: '12px',
+              }}>
+                {errorMessage}
+              </div>
+            )}
 
             {/* Botón Registrarse */}
             <button type="submit" className="submit-btn">

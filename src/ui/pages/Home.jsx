@@ -1,20 +1,106 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../../domain/contexts/AuthContext'
 
 const Home = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState('Calendar');
+  const scrollContainerRef = useRef(null);
+  const homeRef = useRef(null);
+  const eventsRef = useRef(null);
+  const calendarRef = useRef(null);
+  const aiRef = useRef(null);
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
+  
+  const scrollToSection = (name) => {
+    const map = {
+      'Home': homeRef,
+      'Events': eventsRef,
+      'Calendar': calendarRef,
+      'AI Assistant': aiRef,
+    };
+
+    const targetRef = map[name];
+    if (targetRef && targetRef.current && scrollContainerRef.current) {
+      const scrollContainer = scrollContainerRef.current;
+      const containerTop = scrollContainer.getBoundingClientRect().top;
+      const targetTop = targetRef.current.getBoundingClientRect().top;
+      const offset = targetTop - containerTop + scrollContainer.scrollTop - 110;
+      scrollContainer.scrollTo({ top: offset, behavior: 'smooth' });
+      setActiveMenu(name);
+      return;
+    }
+
+    // Fallbacks: navigate to routes when the section is not present on this page
+    if (name === 'Profile') {
+      navigate('/profile');
+      setActiveMenu(name);
+      return;
+    }
+    if (name === 'Accessibility') {
+      navigate('/accessibility');
+      setActiveMenu(name);
+      return;
+    }
+
+    if (name === 'Home') {
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      setActiveMenu('Home');
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const refs = [
+        { name: 'Home', ref: homeRef },
+        { name: 'Events', ref: eventsRef },
+        { name: 'Calendar', ref: calendarRef },
+        { name: 'AI Assistant', ref: aiRef },
+      ];
+      const fromTop = 120; // offset to account for header
+      for (const r of refs) {
+        if (r.ref && r.ref.current) {
+          const rect = r.ref.current.getBoundingClientRect();
+          if (rect.top <= fromTop && rect.bottom > fromTop) {
+            if (activeMenu !== r.name) setActiveMenu(r.name);
+            return;
+          }
+        }
+      }
+    };
+
+    const scrollContainer = scrollContainerRef.current;
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
+    }
+    return () => {
+      if (scrollContainer) {
+        scrollContainer.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [activeMenu]);
 
   const usuarioActivo = {
-    nombre: "User Name",
-    rol: "Adaptive Athlete"
+    nombre: user?.fullName || 'Usuario',
+    rol: user?.disabilityType ? `Adaptive Athlete • ${user.disabilityType}` : 'Adaptive Athlete',
   };
 
   const handleLogout = () => {
-    navigate('/');
+    logout()
+    navigate('/login');
   };
 
   return (
@@ -90,7 +176,7 @@ const Home = () => {
                     ...homeStyles.sidebarNavItem, 
                     ...(activeMenu === 'Home' ? homeStyles.sidebarNavItemActive : {})
                   }}
-                  onClick={() => { setActiveMenu('Home'); setSidebarOpen(false); alert('Ir a Home'); }}
+                  onClick={() => { setSidebarOpen(false); scrollToSection('Home'); }}
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
@@ -104,7 +190,7 @@ const Home = () => {
                     ...homeStyles.sidebarNavItem, 
                     ...(activeMenu === 'Events' ? homeStyles.sidebarNavItemActive : {})
                   }}
-                  onClick={() => { setActiveMenu('Events'); setSidebarOpen(false); alert('Ir a Events'); }}
+                  onClick={() => { setSidebarOpen(false); scrollToSection('Events'); }}
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
@@ -120,7 +206,7 @@ const Home = () => {
                     ...homeStyles.sidebarNavItem, 
                     ...(activeMenu === 'Calendar' ? homeStyles.sidebarNavItemActive : {})
                   }}
-                  onClick={() => { setActiveMenu('Calendar'); setSidebarOpen(false); alert('Ir a Calendar'); }}
+                  onClick={() => { setSidebarOpen(false); scrollToSection('Calendar'); }}
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
@@ -136,7 +222,7 @@ const Home = () => {
                     ...homeStyles.sidebarNavItem, 
                     ...(activeMenu === 'Profile' ? homeStyles.sidebarNavItemActive : {})
                   }}
-                  onClick={() => { setActiveMenu('Profile'); setSidebarOpen(false); alert('Ir a Profile'); }}
+                  onClick={() => { setSidebarOpen(false); scrollToSection('Profile'); }}
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -150,7 +236,7 @@ const Home = () => {
                     ...homeStyles.sidebarNavItem, 
                     ...(activeMenu === 'Accessibility' ? homeStyles.sidebarNavItemActive : {})
                   }}
-                  onClick={() => { setActiveMenu('Accessibility'); setSidebarOpen(false); alert('Ir a Accessibility'); }}
+                  onClick={() => { setSidebarOpen(false); scrollToSection('Accessibility'); }}
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <circle cx="12" cy="4" r="2"/>
@@ -164,7 +250,7 @@ const Home = () => {
                     ...homeStyles.sidebarNavItem, 
                     ...(activeMenu === 'AI Assistant' ? homeStyles.sidebarNavItemActive : {})
                   }}
-                  onClick={() => { setActiveMenu('AI Assistant'); setSidebarOpen(false); alert('Ir a AI Assistant'); }}
+                  onClick={() => { setSidebarOpen(false); scrollToSection('AI Assistant'); }}
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="3" y="11" width="18" height="10" rx="2"/>
@@ -180,7 +266,7 @@ const Home = () => {
       </AnimatePresence>
 
       {/* CONTENIDO DE LA VISTA */}
-      <main style={homeStyles.dashboardContent}>
+      <main ref={scrollContainerRef} style={homeStyles.dashboardContent}>
         <div style={homeStyles.welcomeBanner}>
           <div style={homeStyles.welcomeTitleGroup}>
             <h1 style={homeStyles.welcomeH1}>Ready to <span style={{ color: '#E11D48' }}>Push</span> Your Limits?</h1>
@@ -251,7 +337,7 @@ const Home = () => {
         </div>
 
         <div style={homeStyles.mainGridLayout}>
-          <div style={homeStyles.eventsSection}>
+          <div ref={eventsRef} style={homeStyles.eventsSection}>
             <div style={homeStyles.sectionHeaderRow}>
               <h3 style={homeStyles.sectionTitle}>Eventos Recomendados para ti</h3>
               <span style={homeStyles.seeAllLink} onClick={() => alert('Ver todos los eventos')}>SEE ALL</span>
@@ -339,7 +425,7 @@ const Home = () => {
           </div>
 
           <div style={homeStyles.rightSidebarColumn}>
-            <div style={homeStyles.widgetCard}>
+            <div ref={calendarRef} style={homeStyles.widgetCard}>
               <div style={homeStyles.calendarHeaderRow}>
                 <span style={homeStyles.calendarTitle}>Mi Calendario</span>
                 <div style={homeStyles.calendarNavArrows}>
@@ -383,7 +469,7 @@ const Home = () => {
               </div>
             </div>
 
-            <div style={homeStyles.widgetCard}>
+            <div ref={aiRef} style={homeStyles.widgetCard}>
               <div style={homeStyles.aiAssistantHeader}>
                 <span style={homeStyles.aiAssistantTitle}>Asistente Virtual</span>
                 <div style={homeStyles.aiIconBadge}>

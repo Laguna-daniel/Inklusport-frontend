@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Login from './ui/pages/Login.jsx';
 import Register from './ui/pages/Register.jsx';
 import Home from './ui/pages/Home.jsx'; // <--- NUEVA IMPORTACIÓN DEL DASHBOARD
+import Profile from './ui/pages/Profile.jsx';
 import './styles/App.css';
 import logo from './ui/assets/logo.png';
 
@@ -272,6 +273,7 @@ function App() {
         
         {/* Dashboard - Home (NUEVO) */}
         <Route path="/home" element={<AnimatedPage><Home /></AnimatedPage>} />
+        <Route path="/profile" element={<AnimatedPage><Profile /></AnimatedPage>} />
       </Routes>
     </AnimatePresence>
   );
