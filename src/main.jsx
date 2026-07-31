@@ -2,15 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
-import { AuthProvider } from './domain/contexts/AuthContext'
+import { AuthProvider } from './domain/contexts/AuthContext';
+import { AccessibilityProvider } from './domain/contexts/AccessibilityContext.jsx';
 import './styles/index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
+      <AccessibilityProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </AccessibilityProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

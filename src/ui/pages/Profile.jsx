@@ -25,7 +25,7 @@ const Profile = () => {
       fullName: user.fullName || '',
       email: user.email || '',
       phone: user.phone || '',
-      disabilityType: user.disabilityType || 'Física / Motora',
+      disabilityType: user.disabilityType || '',
       athleteId: user.athleteId || '#0000',
       profilePicUrl:
         user.profilePicUrl ||
@@ -106,7 +106,7 @@ const Profile = () => {
         .profile-logo {
           font-size: 24px;
           font-weight: 800;
-          color: #dc2626;
+          color: #A30D11;
           letter-spacing: -0.025em;
         }
 
@@ -163,7 +163,7 @@ const Profile = () => {
 
         .profile-icon-btn:hover {
           background-color: #f1f5f9;
-          color: #dc2626;
+          color: #A30D11;
         }
 
         /* Main Content Styles */
@@ -207,7 +207,7 @@ const Profile = () => {
           position: absolute;
           bottom: -6px;
           right: -6px;
-          background-color: #dc2626;
+          background-color: #A30D11;
           color: #ffffff;
           border: none;
           width: 40px;
@@ -222,7 +222,7 @@ const Profile = () => {
         }
 
         .profile-camera-btn:hover {
-          background-color: #b91c1c;
+          background-color: #A30D11;
         }
 
         .profile-title-area {
@@ -250,7 +250,7 @@ const Profile = () => {
           position: absolute;
           top: 0;
           right: 0;
-          background-color: #dc2626;
+          background-color: #A30D11;
           color: #ffffff;
           border: none;
           padding: 12px 24px;
@@ -270,7 +270,7 @@ const Profile = () => {
         }
 
         .profile-top-notifications-btn:hover {
-          background-color: #b91c1c;
+          background-color: #A30D11;
         }
 
         /* Card Section Styles */
@@ -296,7 +296,7 @@ const Profile = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #dc2626;
+          color: #A30D11;
         }
 
         .profile-card-title {
@@ -393,7 +393,7 @@ const Profile = () => {
 
         .profile-submit-btn {
           width: 100%;
-          background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+          background: linear-gradient(135deg, #A30D11 0%, #A30D11 100%);
           color: #ffffff;
           border: none;
           padding: 18px 48px;
@@ -559,10 +559,11 @@ const Profile = () => {
                   onChange={handleChange}
                   className="profile-select with-icon"
                 >
-                  <option>Física / Motora</option>
+                  <option>Motriz</option>
                   <option>Visual</option>
                   <option>Auditiva</option>
                   <option>Intelectual</option>
+                   <option>Otra/ninguna</option>
                 </select>
                 <svg className="profile-select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="6 9 12 15 18 9"></polyline>

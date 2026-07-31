@@ -4,13 +4,28 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--app-text-color, rgba(255, 255, 255, 0.87));
+  background-color: var(--app-bg-color, #242424);
+  font-size: var(--app-font-size, 16px);
+
+  --app-font-size: 16px;
+  --app-text-color: rgba(255, 255, 255, 0.87);
+  --app-bg-color: #242424;
+  --app-card-bg: #ffffff;
+  --app-border-color: transparent;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  font-size: var(--app-font-size, 16px);
+}
+
+body {
+  font-size: var(--app-font-size, 16px);
 }
 
 a {
@@ -24,10 +39,11 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  font-size: var(--app-font-size, 16px);
+  color: var(--app-text-color, #111827);
+  background-color: var(--app-bg-color, #242424);
 }
 
 h1 {

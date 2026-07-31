@@ -2,11 +2,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAuth } from '../../domain/contexts/AuthContext'
+import { useAuth } from '../../domain/contexts/AuthContext';
+import { useAccessibility } from '../../domain/contexts/AccessibilityContext.jsx';
 
 const Home = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { contraste } = useAccessibility();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState('Calendar');
   const scrollContainerRef = useRef(null);
@@ -95,7 +97,7 @@ const Home = () => {
 
   const usuarioActivo = {
     nombre: user?.fullName || 'Usuario',
-    rol: user?.disabilityType ? `Adaptive Athlete • ${user.disabilityType}` : 'Adaptive Athlete',
+    rol: user?.disabilityType ? `Deportista adaptado • ${user.disabilityType}` : 'Adaptive Athlete',
   };
 
   const handleLogout = () => {
@@ -124,7 +126,7 @@ const Home = () => {
             <span style={homeStyles.userRoleLabel}>ADAPTIVE ATHLETE</span>
             <div style={homeStyles.userNameText}>{usuarioActivo.nombre}</div>
           </div>
-          <div style={homeStyles.userAvatarBtn} onClick={handleLogout} title="Cerrar Sesión">
+          <div style={homeStyles.userAvatarBtn} onClick={handleLogout} title="">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#E11D48" strokeWidth="2">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
               <circle cx="12" cy="7" r="4"/>
@@ -269,10 +271,10 @@ const Home = () => {
       <main ref={scrollContainerRef} style={homeStyles.dashboardContent}>
         <div style={homeStyles.welcomeBanner}>
           <div style={homeStyles.welcomeTitleGroup}>
-            <h1 style={homeStyles.welcomeH1}>Ready to <span style={{ color: '#E11D48' }}>Push</span> Your Limits?</h1>
+            <h1 style={homeStyles.welcomeH1}>Ready to <span style={{ color: '#A30D11' }}>Push</span> Your Limits?</h1>
             <p style={homeStyles.welcomeP}>Your personalized AI insights are ready. You've maintained a 12-day streak. Keep the momentum going!</p>
           </div>
-          <button style={homeStyles.notificationsBtn} onClick={() => alert('Sin notificaciones nuevas')}>
+          <button style={homeStyles.notificationsBtn} onClick={() => navigate('/notifications')}>
             NOTIFICATIONS
           </button>
         </div>
@@ -281,7 +283,7 @@ const Home = () => {
           <div style={homeStyles.statBox}>
             <div style={homeStyles.statBoxHeader}>
               <span style={homeStyles.statBoxTitle}>NEXT EVENT</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E11D48" strokeWidth="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A30D11" strokeWidth="2">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
                 <line x1="16" y1="2" x2="16" y2="6"/>
                 <line x1="8" y1="2" x2="8" y2="6"/>
@@ -325,7 +327,7 @@ const Home = () => {
           <div style={homeStyles.statBox}>
             <div style={homeStyles.statBoxHeader}>
               <span style={homeStyles.statBoxTitle}>STREAK</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E11D48" strokeWidth="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A30D11" strokeWidth="2">
                 <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.5 4 6.5 2 2 3 3.5 3 5.5a6 6 0 1 1-12 0c0-1.03.23-2 .63-2.87Z"/>
               </svg>
             </div>
@@ -460,7 +462,7 @@ const Home = () => {
                 <div style={homeStyles.calCell}>8</div>
 
                 <div style={homeStyles.calCell}>9</div>
-                <div style={{ ...homeStyles.calCell, backgroundColor: '#E11D48', color: '#ffffff', fontWeight: '700' }}>10</div>
+                <div style={{ ...homeStyles.calCell, backgroundColor: '#A30D11', color: '#ffffff', fontWeight: '700' }}>10</div>
                 <div style={homeStyles.calCell}>11</div>
                 <div style={homeStyles.calCell}>12</div>
                 <div style={{ ...homeStyles.calCell, position: 'relative' }}>13</div>
@@ -485,7 +487,7 @@ const Home = () => {
 
               <div style={homeStyles.aiMetricsList}>
                 <div style={homeStyles.aiMetricRow}>
-                  <div style={{ width: '6px', height: '6px', backgroundColor: '#E11D48', borderRadius: '50%' }}></div>
+                  <div style={{ width: '6px', height: '6px', backgroundColor: '#A30D11', borderRadius: '50%' }}></div>
                   <span>Meta de pasos: 85% completada</span>
                 </div>
                 <div style={homeStyles.aiMetricRow}>
@@ -515,7 +517,9 @@ const homeStyles = {
     left: 0,
     width: '100vw',
     height: '100vh',
-    backgroundColor: '#F8FAFC',
+    backgroundColor: 'var(--app-bg-color, #F8FAFC)',
+    color: 'var(--app-text-color, #0F172A)',
+    fontSize: 'var(--app-font-size, 16px)',
     fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
     overflowY: 'auto',
     boxSizing: 'border-box',
@@ -668,7 +672,7 @@ const homeStyles = {
     transition: 'background-color 0.2s, color 0.2s',
   },
   sidebarNavItemActive: {
-    backgroundColor: '#E11D48',
+    backgroundColor: '#A30D11',
     color: '#FFFFFF',
     boxShadow: '0 4px 12px rgba(225, 29, 72, 0.25)',
   },
@@ -701,7 +705,7 @@ const homeStyles = {
     lineHeight: '1.5',
   },
   notificationsBtn: {
-    backgroundColor: '#E11D48',
+    backgroundColor: '#A30D11',
     color: '#ffffff',
     border: 'none',
     padding: '12px 24px',
@@ -803,7 +807,7 @@ const homeStyles = {
   seeAllLink: {
     fontSize: '12px',
     fontWeight: '700',
-    color: '#E11D48',
+    color: '#A30D11',
     textDecoration: 'none',
     cursor: 'pointer',
   },
@@ -877,7 +881,7 @@ const homeStyles = {
     color: '#0D9488',
   },
   registerEventBtn: {
-    backgroundColor: '#E11D48',
+    backgroundColor: '#A30D11',
     color: '#ffffff',
     border: 'none',
     padding: '8px 18px',
@@ -962,7 +966,7 @@ const homeStyles = {
     width: '32px',
     height: '32px',
     backgroundColor: '#FEE2E2',
-    color: '#E11D48',
+    color: '#A30D11',
     borderRadius: '50%',
     display: 'flex',
     alignItems: 'center',
@@ -971,7 +975,7 @@ const homeStyles = {
   aiRecommendationTag: {
     fontSize: '9px',
     fontWeight: '800',
-    color: '#E11D48',
+    color: '#A30D11',
     letterSpacing: '0.6px',
     textTransform: 'uppercase',
     marginBottom: '6px',
@@ -1003,7 +1007,7 @@ const homeStyles = {
     width: '100%',
     background: 'transparent',
     border: '1px solid #FCA5A5',
-    color: '#E11D48',
+    color: '#A30D11',
     borderRadius: '8px',
     padding: '10px',
     fontSize: '11px',

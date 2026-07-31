@@ -5,6 +5,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Login from './ui/pages/Login.jsx';
 import Register from './ui/pages/Register.jsx';
 import Home from './ui/pages/Home.jsx'; // <--- NUEVA IMPORTACIÓN DEL DASHBOARD
+import Accessibility from './ui/pages/accessibility.jsx';
+import Notifications from './ui/pages/Notifications.jsx';
 import Profile from './ui/pages/Profile.jsx';
 import './styles/App.css';
 import logo from './ui/assets/logo.png';
@@ -31,7 +33,8 @@ const AnimatedPage = ({ children }) => {
         position: 'absolute',
         top: 0,
         left: 0,
-        backgroundColor: '#F8FAFC',
+        backgroundColor: 'var(--app-bg-color, #F8FAFC)',
+        color: 'var(--app-text-color, #111827)',
       }}
     >
       {children}
@@ -273,6 +276,8 @@ function App() {
         
         {/* Dashboard - Home (NUEVO) */}
         <Route path="/home" element={<AnimatedPage><Home /></AnimatedPage>} />
+        <Route path="/accessibility" element={<AnimatedPage><Accessibility /></AnimatedPage>} />
+        <Route path="/notifications" element={<AnimatedPage><Notifications /></AnimatedPage>} />
         <Route path="/profile" element={<AnimatedPage><Profile /></AnimatedPage>} />
       </Routes>
     </AnimatePresence>
