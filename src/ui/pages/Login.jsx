@@ -112,8 +112,8 @@ const Login = () => {
   const navigate = useNavigate();
   const { login, user } = useAuth();
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: 'admin@gmail.com',
+    password: '1234567pro',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
@@ -124,7 +124,7 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
-      navigate('/home');
+      navigate(user.role === 'admin' ? '/admin' : '/home');
     }
   }, [user, navigate]);
 
@@ -151,6 +151,8 @@ const Login = () => {
     });
 
     if (result.success) {
+      const destination = result.data.user?.role === 'admin' ? '/admin' : '/home';
+      navigate(destination);
       setAuthStatus('success');
     } else {
       setAuthStatus('error');
@@ -809,7 +811,7 @@ const Login = () => {
                 <input
                   type="email"
                   name="email"
-                  placeholder="admin@inklusport.com"
+                  placeholder="admin@gmail.com"
                   value={formData.email}
                   onChange={handleChange}
                   required
@@ -833,7 +835,7 @@ const Login = () => {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
-                  placeholder="123456"
+                  placeholder="1234567pro"
                   value={formData.password}
                   onChange={handleChange}
                   required

@@ -8,6 +8,16 @@ const TOKEN_KEY = 'inklusport_token'
 
 const defaultUsers = [
   {
+    fullName: 'Inklusport Admin',
+    email: 'admin@gmail.com',
+    phone: '+34 600 123 456',
+    disabilityType: 'Administración',
+    athleteId: '#ADMIN',
+    profilePicUrl: 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?q=80&w=300&auto=format&fit=crop',
+    password: '1234567pro',
+    role: 'admin',
+  },
+  {
     fullName: 'Demo Athlete',
     email: 'laguna@gmail.com',
     phone: '+34 612 345 678',
@@ -15,8 +25,20 @@ const defaultUsers = [
     athleteId: '#4402',
     profilePicUrl: 'https://images.unsplash.com/photo-1581343432368-17c864c29e01?q=80&w=300&auto=format&fit=crop',
     password: '123456',
+    role: 'user',
   },
 ]
+
+const ensureAdminUser = (users) => {
+  const adminEmail = defaultUsers[0].email.toLowerCase()
+  const existingAdmin = users.find((u) => u.email?.toLowerCase() === adminEmail)
+  const filtered = users.filter((u) => u.email?.toLowerCase() !== adminEmail)
+
+  if (!existingAdmin || existingAdmin.password !== defaultUsers[0].password) {
+    return [...filtered, defaultUsers[0]]
+  }
+  return users
+}
 
 const loadUsers = () => {
   try {
@@ -25,7 +47,16 @@ const loadUsers = () => {
       localStorage.setItem(USERS_KEY, JSON.stringify(defaultUsers))
       return [...defaultUsers]
     }
-    return JSON.parse(stored)
+
+    const parsed = JSON.parse(stored)
+    const users = Array.isArray(parsed) ? parsed : [...defaultUsers]
+    const updatedUsers = ensureAdminUser(users)
+
+    if (updatedUsers.length !== users.length || JSON.stringify(updatedUsers) !== JSON.stringify(users)) {
+      localStorage.setItem(USERS_KEY, JSON.stringify(updatedUsers))
+    }
+
+    return updatedUsers
   } catch {
     return [...defaultUsers]
   }
@@ -110,6 +141,7 @@ export const AuthProvider = ({ children }) => {
         userData.profilePicUrl ||
         'https://images.unsplash.com/photo-1581343432368-17c864c29e01?q=80&w=300&auto=format&fit=crop',
       password: userData.password,
+      role: userData.role || 'user',
     }
 
     const updatedUsers = [...users, newUser]

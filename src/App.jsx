@@ -2,9 +2,11 @@
 import React, { useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useAuth } from './domain/contexts/AuthContext';
 import Login from './ui/pages/Login.jsx';
 import Register from './ui/pages/Register.jsx';
-import Home from './ui/pages/Home.jsx'; // <--- NUEVA IMPORTACIÓN DEL DASHBOARD
+import Home from './ui/pages/Home.jsx';
+import AdminDashboard from './ui/pages/AdminDashboard.jsx';
 import Accessibility from './ui/pages/accessibility.jsx';
 import Notifications from './ui/pages/Notifications.jsx';
 import Profile from './ui/pages/Profile.jsx';
@@ -148,6 +150,32 @@ const RedSpaceBackground = () => {
   );
 };
 
+const ProtectedRoute = ({ children }) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login', { replace: true });
+    }
+  }, [user, navigate]);
+
+  return user ? children : null;
+};
+
+const AdminRoute = ({ children }) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user || user.role !== 'admin') {
+      navigate('/login', { replace: true });
+    }
+  }, [user, navigate]);
+
+  return user?.role === 'admin' ? children : null;
+};
+
 // COMPONENTE LANDING (PÁGINA DE INICIO)
 const Landing = () => {
   const navigate = useNavigate();
@@ -275,10 +303,11 @@ function App() {
         <Route path="/register" element={<AnimatedPage><Register /></AnimatedPage>} />
         
         {/* Dashboard - Home (NUEVO) */}
-        <Route path="/home" element={<AnimatedPage><Home /></AnimatedPage>} />
-        <Route path="/accessibility" element={<AnimatedPage><Accessibility /></AnimatedPage>} />
-        <Route path="/notifications" element={<AnimatedPage><Notifications /></AnimatedPage>} />
-        <Route path="/profile" element={<AnimatedPage><Profile /></AnimatedPage>} />
+        <Route path="/home" element={<AnimatedPage><ProtectedRoute><Home /></ProtectedRoute></AnimatedPage>} />
+        <Route path="/admin" element={<AnimatedPage><AdminRoute><AdminDashboard /></AdminRoute></AnimatedPage>} />
+        <Route path="/accessibility" element={<AnimatedPage><ProtectedRoute><Accessibility /></ProtectedRoute></AnimatedPage>} />
+        <Route path="/notifications" element={<AnimatedPage><ProtectedRoute><Notifications /></ProtectedRoute></AnimatedPage>} />
+        <Route path="/profile" element={<AnimatedPage><ProtectedRoute><Profile /></ProtectedRoute></AnimatedPage>} />
       </Routes>
     </AnimatePresence>
   );
