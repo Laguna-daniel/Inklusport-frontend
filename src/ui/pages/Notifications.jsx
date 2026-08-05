@@ -1,9 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 import { useAccessibility } from '../../domain/contexts/AccessibilityContext.jsx';
+import { useNotifications } from '../../domain/contexts/NotificationsContext.jsx';
 
 export default function Notifications() {
   const { notifSonoras } = useAccessibility();
-  const [filtroActivo, setFiltroActivo] = useState("Todas");
+  const { notifications, markNotificationAsRead, markAllAsRead } = useNotifications();
+  const [filtroActivo, setFiltroActivo] = useState('Todas');
+
+  useEffect(() => {
+    const hasUnread = notifications.some((notification) => !notification.read);
+    if (notifications.length > 0 && hasUnread) {
+      markAllAsRead();
+    }
+  }, [notifications, markAllAsRead]);
+
+  const filteredNotifications = notifications.filter((notification) => {
+    if (filtroActivo === 'Todas') {
+      return true;
+    }
+    if (filtroActivo === 'Urgentes') {
+      return (
+        notification.category?.toLowerCase() === 'urgentes' ||
+        notification.category?.toLowerCase() === 'urgente'
+      );
+    }
+    return notification.category?.toLowerCase() === 'sistema';
+  });
 
   const reproducirAudioTexto = (texto) => {
     if (!notifSonoras) {
@@ -12,14 +34,14 @@ export default function Notifications() {
 
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-      
+
       const utterance = new SpeechSynthesisUtterance(texto);
       utterance.lang = 'es-ES'; // Configurado en español
       utterance.rate = 1.0;     // Velocidad normal
-      
+
       window.speechSynthesis.speak(utterance);
     } else {
-      alert("Tu navegador no soporta la reproducción de audio por voz.");
+      alert('Tu navegador no soporta la reproducción de audio por voz.');
     }
   };
 
@@ -167,6 +189,25 @@ export default function Notifications() {
 
   return (
     <div style={contenedorStyle}>
+      <style>{`
+        @keyframes slideFadeIn {
+          from { opacity: 0; transform: translateY(16px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-fade-in {
+          opacity: 0;
+          animation: slideFadeIn 0.42s ease forwards;
+        }
+
+        .slide-fade-in.delay-1 {
+          animation-delay: 0.08s;
+        }
+
+        .slide-fade-in.delay-2 {
+          animation-delay: 0.14s;
+        }
+      `}</style>
       <div style={{ width: "100%", maxWidth: "700px" }}>
         
         <div style={tarjetaPrincipalStyle}>
@@ -210,111 +251,91 @@ export default function Notifications() {
           </button>
         </div>
 
-        <div style={tarjetaNotificacionStyle(true)}>
-          <div style={headerNotificacionStyle}>
-            <div style={infoNotificacionStyle}>
-              <div style={iconoItemStyle(true)}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A30D11" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
-                </svg>
-              </div>
-              <div>
-                <h3 style={{ fontSize: "15px", fontWeight: "bold", color: "#1F2937", margin: "0 0 4px 0" }}>
-                  15 minutos para nadar!
-                </h3>
-                <p style={{ fontSize: "14px", color: "#4B5563", margin: "0", lineHeight: "1.4" }}>
-                  "El torneo de natación inclusiva comenzará en 15 minutos en el carril central. Por favor, preparen su equipamiento."
-                </p>
-              </div>
-            </div>
-            <span style={{ fontSize: "11px", color: "#9CA3AF", fontWeight: "600", whiteSpace: "nowrap" }}>
-              HACE 2 MIN
-            </span>
+        <div style={barraFiltrosStyle}>
+          <div style={contenedorFiltrosStyle}>
+            {['Todas', 'Urgentes', 'Sistema'].map((filtro) => (
+              <button
+                key={filtro}
+                style={estiloBotonFiltro(filtroActivo === filtro)}
+                onClick={() => setFiltroActivo(filtro)}
+              >
+                {filtro}
+              </button>
+            ))}
           </div>
-          <div style={{ ...accionesStyle, paddingLeft: "46px" }}>
-            <button 
-              style={botonReproducirStyle(notifSonoras)} 
-              onClick={() => reproducirAudioTexto("El torneo de natación inclusiva comenzará en 15 minutos en el carril central. Por favor, preparen su equipamiento.")}
-              disabled={!notifSonoras}
-            >
-              <span style={{ color: "#A30D11" }}>▶</span> {notifSonoras ? 'Reproducir Audio' : 'Audio desactivado'}
-            </button>
-            <button style={botonMarcarLeidaStyle}>Marcar como leída</button>
-          </div>
+          <button style={botonConfigStyle} onClick={markAllAsRead}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A30D11" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v1a7 7 0 0 1-14 0v-1"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+            Marcar todo leído
+          </button>
         </div>
 
-        <div style={tarjetaNotificacionStyle(false)}>
-          <div style={headerNotificacionStyle}>
-            <div style={infoNotificacionStyle}>
-              <div style={iconoItemStyle(false)}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="9" cy="7" r="4"></circle>
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
+        {filteredNotifications.length === 0 ? (
+          <div style={{ ...tarjetaNotificacionStyle(false), textAlign: 'center', padding: '40px 24px' }}>
+            <h3 style={{ margin: 0, fontSize: '18px', color: '#111827' }}>No hay notificaciones para mostrar.</h3>
+            <p style={{ margin: '10px 0 0', color: '#6B7280' }}>
+              Vuelve más tarde o verifica otra categoría.
+            </p>
+          </div>
+        ) : (
+          filteredNotifications.map((notification, index) => (
+            <div
+              key={notification.id}
+              style={{
+                ...tarjetaNotificacionStyle(!notification.read),
+                animation: 'slideFadeIn 0.4s ease forwards',
+                animationDelay: `${0.04 * (index + 1)}s`,
+              }}
+              className="slide-fade-in"
+            >
+              <div style={headerNotificacionStyle}>
+                <div style={infoNotificacionStyle}>
+                  <div style={iconoItemStyle(!notification.read)}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={notification.read ? '#4B5563' : '#A30D11'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                      <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: '15px', fontWeight: 'bold', color: '#1F2937', margin: '0 0 4px 0' }}>
+                      {notification.title}
+                    </h3>
+                    <p style={{ fontSize: '14px', color: '#4B5563', margin: '0', lineHeight: '1.4' }}>
+                      {notification.message}
+                    </p>
+                  </div>
+                </div>
+                <span style={{ fontSize: '11px', color: '#9CA3AF', fontWeight: '600', whiteSpace: 'nowrap' }}>
+                  {new Date(notification.createdAt).toLocaleString('es-ES', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    day: '2-digit',
+                    month: 'short',
+                  })}
+                </span>
               </div>
-              <div>
-                <h3 style={{ fontSize: "15px", fontWeight: "bold", color: "#1F2937", margin: "0 0 4px 0" }}>
-                  Recordatorio de Calentamiento
-                </h3>
-                <p style={{ fontSize: "14px", color: "#4B5563", margin: "0", lineHeight: "1.4" }}>
-                  "Recordatorio: Sesión de entrenamiento con el Coach Javier a las 16:30. No olvides tu hidratación."
-                </p>
+              <div style={{ ...accionesStyle, paddingLeft: '46px' }}>
+                <button
+                  style={botonReproducirStyle(notifSonoras)}
+                  onClick={() => reproducirAudioTexto(notification.message)}
+                  disabled={!notifSonoras}
+                >
+                  <span style={{ color: '#A30D11' }}>▶</span> {notifSonoras ? 'Reproducir Audio' : 'Audio desactivado'}
+                </button>
+                <button
+                  style={botonMarcarLeidaStyle}
+                  onClick={() => markNotificationAsRead(notification.id)}
+                >
+                  {notification.read ? 'Leída' : 'Marcar como leída'}
+                </button>
               </div>
             </div>
-            <span style={{ fontSize: "11px", color: "#9CA3AF", fontWeight: "600", whiteSpace: "nowrap" }}>
-              HACE 45 MIN
-            </span>
-          </div>
-          <div style={{ ...accionesStyle, paddingLeft: "46px" }}>
-            <button 
-              style={botonReproducirStyle(notifSonoras)} 
-              onClick={() => reproducirAudioTexto("Recordatorio: Sesión de entrenamiento con el Coach Javier a las 16:30. No olvides tu hidratación.")}
-              disabled={!notifSonoras}
-            >
-              <span style={{ color: "#A30D11" }}>▶</span> {notifSonoras ? 'Reproducir Audio' : 'Audio desactivado'}
-            </button>
-            <button style={botonMarcarLeidaStyle}>Marcar como leída</button>
-          </div>
-        </div>
-
-        <div style={tarjetaNotificacionStyle(false)}>
-          <div style={headerNotificacionStyle}>
-            <div style={infoNotificacionStyle}>
-              <div style={iconoItemStyle(false)}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4B5563" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="9" cy="7" r="4"></circle>
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
-              </div>
-              <div>
-                <h3 style={{ fontSize: "15px", fontWeight: "bold", color: "#1F2937", margin: "0 0 4px 0" }}>
-                  Voces actualizadas
-                </h3>
-                <p style={{ fontSize: "14px", color: "#4B5563", margin: "0", lineHeight: "1.4" }}>
-                  "Se han optimizado las voces del lector de pantalla para mayor claridad en ambientes ruidosos."
-                </p>
-              </div>
-            </div>
-            <span style={{ fontSize: "11px", color: "#9CA3AF", fontWeight: "600", whiteSpace: "nowrap" }}>
-              HOY, 09:15 AM
-            </span>
-          </div>
-          <div style={{ ...accionesStyle, paddingLeft: "46px" }}>
-            <button 
-              style={botonReproducirStyle(notifSonoras)} 
-              onClick={() => reproducirAudioTexto("Se han optimizado las voces del lector de pantalla para mayor claridad en ambientes ruidosos.")}
-              disabled={!notifSonoras}
-            >
-              <span style={{ color: "#A30D11" }}>▶</span> {notifSonoras ? 'Reproducir Audio' : 'Audio desactivado'}
-            </button>
-            <button style={botonMarcarLeidaStyle}>Marcar como leída</button>
-          </div>
-        </div>
+          ))
+        )}
 
       </div>
     </div>

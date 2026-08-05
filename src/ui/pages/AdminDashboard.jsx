@@ -62,6 +62,27 @@ const AdminDashboard = () => {
 
   return (
     <div style={pageStyles.pageContainer}>
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(16px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in-up {
+          opacity: 0;
+          animation: fadeInUp 0.38s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.08s; }
+        .delay-2 { animation-delay: 0.14s; }
+        .delay-3 { animation-delay: 0.20s; }
+        .delay-4 { animation-delay: 0.26s; }
+
+        .card-hover:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 18px 34px rgba(15, 23, 42, 0.12);
+        }
+      `}</style>
       {/* OVERLAY PARA MÓVIL CUANDO EL SIDEBAR ESTÁ ABIERTO */}
       {sidebarOpen && (
         <div 
@@ -154,7 +175,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* HEADER BAR */}
-        <header style={pageStyles.headerBar}>
+        <header style={pageStyles.headerBar} className="fade-in-up delay-1">
           <div>
             <div style={pageStyles.headerLabel}>Inteligencia administrativa</div>
             <div style={pageStyles.headerSubtitle}>
@@ -170,7 +191,7 @@ const AdminDashboard = () => {
         </header>
 
         {/* STATS GRID */}
-        <section style={pageStyles.statsGrid}>
+        <section style={pageStyles.statsGrid} className="fade-in-up delay-2">
           {stats.map((item) => (
             <div key={item.label} style={{ ...pageStyles.statCard, backgroundColor: item.color }}>
               <div style={pageStyles.statCardTop}>
@@ -192,7 +213,7 @@ const AdminDashboard = () => {
           {/* LEFT COLUMN */}
           <div style={pageStyles.leftColumn}>
             {/* USERS TABLE CARD */}
-            <div style={pageStyles.tableCard}>
+            <div style={pageStyles.tableCard} className="fade-in-up delay-3 card-hover">
               <div style={pageStyles.tableHeaderRow}>
                 <div style={pageStyles.cardTitle}>Activaciones recientes de usuarios</div>
                 <button style={pageStyles.viewAllBtn}>VER TODO</button>
@@ -321,7 +342,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* AI ACTIVITY STREAM */}
-            <div style={pageStyles.activityStreamCard}>
+            <div style={pageStyles.activityStreamCard} className="fade-in-up delay-4 card-hover">
               <div style={pageStyles.cardTitle}>Flujo de actividad de IA</div>
               <div style={pageStyles.activityList}>
                 {activities.map((activity, idx) => (

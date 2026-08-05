@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../domain/contexts/AuthContext'
+import { useAuth } from '../../domain/contexts/AuthContext';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -30,36 +30,40 @@ const Profile = () => {
       profilePicUrl:
         user.profilePicUrl ||
         'https://images.unsplash.com/photo-1581343432368-17c864c29e01?q=80&w=300&auto=format&fit=crop',
-    })
-  }, [user, navigate])
+    });
+  }, [user, navigate]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setProfileData((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!profileData.fullName || !profileData.email) {
-      setStatusMessage('Completa el nombre y el correo antes de actualizar.')
-      return
+      setStatusMessage('Completa el nombre y el correo antes de actualizar.');
+      return;
     }
 
-    const result = await updateProfile(profileData)
+    const result = await updateProfile(profileData);
     if (result.success) {
-      setStatusMessage('Perfil actualizado correctamente.')
+      setStatusMessage('Perfil actualizado correctamente.');
     } else {
-      setStatusMessage(result.error)
+      setStatusMessage(result.error);
     }
-  }
+  };
 
   const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
+    logout();
+    navigate('/login');
+  };
+
+  const handleGoHome = () => {
+    navigate('/home'); // O '/' según la ruta configurada para Home
+  };
 
   return (
     <div className="profile-container">
@@ -81,17 +85,18 @@ const Profile = () => {
         /* Navbar Styles */
         .profile-navbar {
           background-color: #ffffff;
-          border-bottom: 1px solid #f1f5f9;
+          border-bottom: 1px solid #e2e8f0;
           position: sticky;
           top: 0;
           z-index: 50;
-          box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+          backdrop-filter: blur(8px);
         }
 
         .profile-nav-content {
           max-width: 1400px;
           margin: 0 auto;
-          padding: 12px 24px;
+          padding: 14px 28px;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -100,14 +105,33 @@ const Profile = () => {
         .profile-nav-left {
           display: flex;
           align-items: center;
-          gap: 16px;
+          gap: 12px;
+        }
+
+        .back-home-btn {
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 6px;
+          border-radius: 8px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #0f172a;
+          transition: all 0.2s ease;
+        }
+
+        .back-home-btn:hover {
+          background-color: #f1f5f9;
+          transform: translateX(-3px);
         }
 
         .profile-logo {
           font-size: 24px;
-          font-weight: 800;
+          font-weight: 900;
           color: #A30D11;
-          letter-spacing: -0.025em;
+          letter-spacing: -0.03em;
+          user-select: none;
         }
 
         .profile-nav-right {
@@ -117,9 +141,13 @@ const Profile = () => {
         }
 
         .profile-nav-tag {
-          font-size: 13px;
+          font-size: 12px;
           color: #64748b;
-          font-weight: 500;
+          font-weight: 700;
+          letter-spacing: 0.05em;
+          background-color: #f1f5f9;
+          padding: 6px 12px;
+          border-radius: 20px;
         }
 
         .profile-nav-divider {
@@ -135,11 +163,12 @@ const Profile = () => {
         }
 
         .profile-nav-avatar {
-          width: 38px;
-          height: 38px;
+          width: 40px;
+          height: 40px;
           border-radius: 50%;
           object-fit: cover;
-          border: 2px solid #e2e8f0;
+          border: 2px solid #ffffff;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .profile-nav-username {
@@ -149,36 +178,43 @@ const Profile = () => {
         }
 
         .profile-icon-btn {
-          background: none;
-          border: none;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
           cursor: pointer;
-          padding: 8px;
-          border-radius: 50%;
+          padding: 9px;
+          border-radius: 12px;
           color: #64748b;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: background-color 0.2s, color 0.2s;
+          transition: all 0.2s ease;
         }
 
         .profile-icon-btn:hover {
-          background-color: #f1f5f9;
+          background-color: #fef2f2;
+          border-color: #fca5a5;
           color: #A30D11;
+          transform: translateY(-1px);
         }
 
         /* Main Content Styles */
         .profile-main {
-          max-width: 1400px;
+          max-width: 1200px;
           margin: 0 auto;
-          padding: 40px 24px;
+          padding: 48px 24px;
         }
 
         .profile-header-section {
           display: flex;
           flex-direction: column;
           gap: 24px;
-          margin-bottom: 48px;
+          margin-bottom: 40px;
           position: relative;
+          background: #ffffff;
+          padding: 32px;
+          border-radius: 28px;
+          border: 1px solid #f1f5f9;
+          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.03);
         }
 
         @media (min-width: 768px) {
@@ -190,17 +226,23 @@ const Profile = () => {
 
         .profile-avatar-container {
           position: relative;
-          width: 140px;
-          height: 140px;
+          width: 130px;
+          height: 130px;
+          flex-shrink: 0;
         }
 
         .profile-main-avatar {
-          width: 140px;
-          height: 140px;
+          width: 130px;
+          height: 130px;
           border-radius: 24px;
           object-fit: cover;
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.12);
           border: 4px solid #ffffff;
+          transition: transform 0.3s ease;
+        }
+
+        .profile-avatar-container:hover .profile-main-avatar {
+          transform: scale(1.02);
         }
 
         .profile-camera-btn {
@@ -209,57 +251,67 @@ const Profile = () => {
           right: -6px;
           background-color: #A30D11;
           color: #ffffff;
-          border: none;
-          width: 40px;
-          height: 40px;
+          border: 3px solid #ffffff;
+          width: 42px;
+          height: 42px;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-          transition: background-color 0.2s;
+          box-shadow: 0 4px 10px rgba(163, 13, 17, 0.3);
+          transition: all 0.2s ease;
         }
 
         .profile-camera-btn:hover {
-          background-color: #A30D11;
+          background-color: #820a0d;
+          transform: scale(1.1);
         }
 
         .profile-title-area {
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: 6px;
         }
 
         .profile-title {
-          font-size: 44px;
+          font-size: 38px;
           font-weight: 800;
           color: #0f172a;
           letter-spacing: -0.03em;
           margin: 0;
+          line-height: 1.1;
         }
 
         .profile-subtitle {
-          font-size: 18px;
+          font-size: 15px;
           color: #2563eb;
-          font-weight: 600;
+          font-weight: 700;
           margin: 0;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          background: #eff6ff;
+          padding: 6px 14px;
+          border-radius: 10px;
+          width: fit-content;
         }
 
         .profile-top-notifications-btn {
           position: absolute;
-          top: 0;
-          right: 0;
+          top: 32px;
+          right: 32px;
           background-color: #A30D11;
           color: #ffffff;
           border: none;
-          padding: 12px 24px;
+          padding: 12px 22px;
           border-radius: 12px;
-          font-weight: 600;
-          font-size: 13px;
+          font-weight: 700;
+          font-size: 12px;
+          letter-spacing: 0.05em;
           cursor: pointer;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-          transition: background-color 0.2s;
+          box-shadow: 0 4px 12px rgba(163, 13, 17, 0.25);
+          transition: all 0.2s ease;
           display: none;
         }
 
@@ -270,15 +322,17 @@ const Profile = () => {
         }
 
         .profile-top-notifications-btn:hover {
-          background-color: #A30D11;
+          background-color: #820a0d;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(163, 13, 17, 0.35);
         }
 
         /* Card Section Styles */
         .profile-card {
           background-color: #ffffff;
           padding: 40px;
-          border-radius: 24px;
-          box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+          border-radius: 28px;
+          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.03);
           border: 1px solid #f1f5f9;
         }
 
@@ -286,7 +340,9 @@ const Profile = () => {
           display: flex;
           align-items: center;
           gap: 16px;
-          margin-bottom: 36px;
+          margin-bottom: 32px;
+          padding-bottom: 20px;
+          border-bottom: 1px solid #f1f5f9;
         }
 
         .profile-card-icon-box {
@@ -300,23 +356,25 @@ const Profile = () => {
         }
 
         .profile-card-title {
-          font-size: 24px;
-          font-weight: 700;
+          font-size: 22px;
+          font-weight: 800;
           color: #0f172a;
           margin: 0;
+          letter-spacing: -0.01em;
         }
 
         /* Form Styles */
         .profile-form-grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 28px;
+          gap: 24px;
         }
 
         @media (min-width: 768px) {
           .profile-form-grid {
             grid-template-columns: repeat(2, 1fr);
-            column-gap: 36px;
+            column-gap: 32px;
+            row-gap: 28px;
           }
         }
 
@@ -327,10 +385,10 @@ const Profile = () => {
         }
 
         .profile-form-label {
-          font-size: 12px;
-          font-weight: 700;
+          font-size: 11px;
+          font-weight: 800;
           color: #64748b;
-          letter-spacing: 0.05em;
+          letter-spacing: 0.08em;
         }
 
         .profile-input-wrapper {
@@ -343,31 +401,37 @@ const Profile = () => {
           position: absolute;
           left: 16px;
           color: #94a3b8;
-          width: 20px;
-          height: 20px;
+          width: 18px;
+          height: 18px;
           pointer-events: none;
+          transition: color 0.2s ease;
         }
 
         .profile-input, .profile-select {
           width: 100%;
-          padding: 16px 20px;
+          padding: 14px 18px;
           background-color: #f8fafc;
-          border: 1px solid #e2e8f0;
-          border-radius: 12px;
-          font-size: 16px;
+          border: 1.5px solid #e2e8f0;
+          border-radius: 14px;
+          font-size: 15px;
+          font-weight: 500;
           color: #0f172a;
           outline: none;
-          transition: border-color 0.2s, box-shadow 0.2s;
+          transition: all 0.2s ease;
         }
 
         .profile-input:focus, .profile-select:focus {
-          border-color: #93c5fd;
-          box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.3);
+          border-color: #2563eb;
+          box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
           background-color: #ffffff;
         }
 
+        .profile-input-wrapper:focus-within .profile-input-icon {
+          color: #2563eb;
+        }
+
         .profile-input.with-icon, .profile-select.with-icon {
-          padding-left: 52px;
+          padding-left: 48px;
         }
 
         .profile-select {
@@ -379,8 +443,8 @@ const Profile = () => {
           position: absolute;
           right: 16px;
           color: #94a3b8;
-          width: 20px;
-          height: 20px;
+          width: 18px;
+          height: 18px;
           pointer-events: none;
         }
 
@@ -388,26 +452,29 @@ const Profile = () => {
           grid-column: 1 / -1;
           display: flex;
           justify-content: flex-end;
-          margin-top: 16px;
+          margin-top: 12px;
+          padding-top: 12px;
         }
 
         .profile-submit-btn {
           width: 100%;
-          background: linear-gradient(135deg, #A30D11 0%, #A30D11 100%);
+          background: #A30D11;
           color: #ffffff;
           border: none;
-          padding: 18px 48px;
-          font-size: 16px;
-          font-weight: 700;
-          border-radius: 16px;
+          padding: 16px 40px;
+          font-size: 14px;
+          font-weight: 800;
+          letter-spacing: 0.05em;
+          border-radius: 14px;
           cursor: pointer;
-          box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-          transition: transform 0.15s, box-shadow 0.15s, background-color 0.2s;
+          box-shadow: 0 4px 14px rgba(163, 13, 17, 0.3);
+          transition: all 0.2s ease;
         }
 
         .profile-submit-btn:hover {
+          background-color: #820a0d;
           transform: translateY(-2px);
-          box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+          box-shadow: 0 6px 20px rgba(163, 13, 17, 0.4);
         }
 
         .profile-submit-btn:active {
@@ -425,6 +492,18 @@ const Profile = () => {
       <header className="profile-navbar">
         <nav className="profile-nav-content">
           <div className="profile-nav-left">
+            {/* Botón Volver a Home */}
+            <button 
+              className="back-home-btn" 
+              type="button" 
+              onClick={handleGoHome} 
+              title="Volver a Inicio"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+            </button>
             <div className="profile-logo">
               INKLUSPORT
             </div>
@@ -442,7 +521,7 @@ const Profile = () => {
               <span className="profile-nav-username">{profileData.fullName}</span>
             </div>
             <button className="profile-icon-btn" type="button" onClick={handleLogout} title="Cerrar sesión">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M16 17l5-5-5-5"></path>
                 <path d="M21 12H9"></path>
                 <path d="M9 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4"></path>
@@ -484,7 +563,7 @@ const Profile = () => {
         <section className="profile-card">
           <div className="profile-card-header">
             <div className="profile-card-icon-box">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>
@@ -563,7 +642,7 @@ const Profile = () => {
                   <option>Visual</option>
                   <option>Auditiva</option>
                   <option>Intelectual</option>
-                   <option>Otra/ninguna</option>
+                  <option>Otra/ninguna</option>
                 </select>
                 <svg className="profile-select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="6 9 12 15 18 9"></polyline>
@@ -574,12 +653,13 @@ const Profile = () => {
             {statusMessage && (
               <div style={{
                 gridColumn: '1 / -1',
-                backgroundColor: '#f8fafc',
-                border: '1px solid #e2e8f0',
-                borderRadius: '16px',
+                backgroundColor: '#f0fdf4',
+                border: '1px solid #bbf7d0',
+                borderRadius: '14px',
                 padding: '16px 20px',
-                color: '#0f172a',
+                color: '#166534',
                 fontWeight: 600,
+                fontSize: '14px'
               }}>
                 {statusMessage}
               </div>

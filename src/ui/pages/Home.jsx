@@ -4,18 +4,56 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../domain/contexts/AuthContext';
 import { useAccessibility } from '../../domain/contexts/AccessibilityContext.jsx';
+import { useNotifications } from '../../domain/contexts/NotificationsContext.jsx';
 
 const Home = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { contraste } = useAccessibility();
+  const { unreadCount, addNotification } = useNotifications();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeMenu, setActiveMenu] = useState('Calendar');
+  const [activeMenu, setActiveMenu] = useState('Home');
+  const [enrollModalStep, setEnrollModalStep] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [enrollmentForm, setEnrollmentForm] = useState({
+    nombre: '',
+    email: '',
+    telefono: '',
+    disabilityType: '',
+    comentarios: '',
+  });
+  const [enrollmentError, setEnrollmentError] = useState('');
+  const [enrollmentLoading, setEnrollmentLoading] = useState(false);
   const scrollContainerRef = useRef(null);
   const homeRef = useRef(null);
   const eventsRef = useRef(null);
   const calendarRef = useRef(null);
   const aiRef = useRef(null);
+
+  const eventsData = [
+    {
+      id: 'basketball',
+      title: 'Clínica de Baloncesto en Silla',
+      tag: 'DEPORTE ADAPTADO',
+      date: '15 Nov, 2023',
+      time: '10:00 AM',
+      location: 'Gimnasio Central',
+      spots: '12 cupos disponibles',
+      image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=600&auto=format&fit=crop',
+      description: 'Únete a nuestra clínica intensiva diseñada para atletas adaptados. Aprenderás movimiento en silla, estrategias de equipo y preparación física segura.',
+    },
+    {
+      id: 'yoga',
+      title: 'Yoga Adaptativo y Mindfulness',
+      tag: 'WELLNESS',
+      date: '18 Nov, 2023',
+      time: '08:30 AM',
+      location: 'Sala de Meditación',
+      spots: '5 cupos disponibles',
+      image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=600&auto=format&fit=crop',
+      description: 'Siente una sesión enfocada en movilidad segura, respiración y bienestar mental. Ideal para deportistas con distintas capacidades.',
+    },
+  ];
 
   useEffect(() => {
     if (!user) {
@@ -64,6 +102,65 @@ const Home = () => {
     }
   };
 
+  const handleOpenEnrollModal = (eventData) => {
+    setSelectedEvent(eventData);
+    setEnrollmentForm({
+      nombre: user?.fullName || '',
+      email: user?.email || '',
+      telefono: user?.phone || '',
+      disabilityType: user?.disabilityType || '',
+      comentarios: '',
+    });
+    setEnrollmentError('');
+    setEnrollmentLoading(false);
+    setEnrollModalStep('confirm');
+  };
+
+  const handleCloseEnrollModal = () => {
+    setEnrollModalStep(null);
+    setSelectedEvent(null);
+    setEnrollmentError('');
+    setEnrollmentLoading(false);
+  };
+
+  const handleConfirmEnroll = () => {
+    setEnrollModalStep('form');
+  };
+
+  const handleChangeEnrollmentField = (e) => {
+    const { name, value } = e.target;
+    setEnrollmentForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmitEnrollment = async (e) => {
+    e.preventDefault();
+    setEnrollmentError('');
+
+    if (!enrollmentForm.nombre || enrollmentForm.nombre.trim().length < 3) {
+      setEnrollmentError('El nombre completo es obligatorio (mínimo 3 caracteres).');
+      return;
+    }
+
+    if (!enrollmentForm.email || !enrollmentForm.email.includes('@')) {
+      setEnrollmentError('El correo electrónico es obligatorio y debe ser válido.');
+      return;
+    }
+
+    setEnrollmentLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    setEnrollmentLoading(false);
+
+    addNotification({
+      title: `Inscripción confirmada: ${selectedEvent?.title || 'Evento'}`,
+      message: `Has sido inscrito correctamente en ${selectedEvent?.title || 'el evento'} ${selectedEvent?.date ? `(${selectedEvent.date})` : ''} ${selectedEvent?.time ? `a las ${selectedEvent.time}` : ''}.`,
+      category: 'Eventos',
+      read: false,
+      createdAt: new Date().toISOString(),
+    });
+
+    setEnrollModalStep('success');
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       const refs = [
@@ -97,7 +194,7 @@ const Home = () => {
 
   const usuarioActivo = {
     nombre: user?.fullName || 'Usuario',
-    rol: user?.disabilityType ? `Deportista adaptado • ${user.disabilityType}` : 'Adaptive Athlete',
+    rol: user?.disabilityType ? `Deportista adaptado • ${user.disabilityType}` : 'Atleta adaptado',
   };
 
   const handleLogout = () => {
@@ -109,6 +206,25 @@ const Home = () => {
     <div style={homeStyles.homeContainer}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(18px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleIn {
+          from { opacity: 0; transform: scale(0.96); }
+          to { opacity: 1; transform: scale(1); }
+        }
+
+        .home-fade-in {
+          opacity: 0;
+          animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .home-modal-scale {
+          animation: scaleIn 0.22s ease forwards;
+        }
       `}</style>
 
       {/* HEADER SUPERIOR */}
@@ -123,7 +239,7 @@ const Home = () => {
         </div>
         <div style={homeStyles.navRight}>
           <div style={homeStyles.userInfoText}>
-            <span style={homeStyles.userRoleLabel}>ADAPTIVE ATHLETE</span>
+            <span style={homeStyles.userRoleLabel}>ATLETA ADAPTADO</span>
             <div style={homeStyles.userNameText}>{usuarioActivo.nombre}</div>
           </div>
           <div style={homeStyles.userAvatarBtn} onClick={handleLogout} title="">
@@ -184,7 +300,7 @@ const Home = () => {
                     <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                     <polyline points="9 22 9 12 15 12 15 22"/>
                   </svg>
-                  <span>Home</span>
+                  <span>Inicio</span>
                 </div>
 
                 <div 
@@ -200,7 +316,7 @@ const Home = () => {
                     <line x1="8" y1="2" x2="8" y2="6"/>
                     <line x1="3" y1="10" x2="21" y2="10"/>
                   </svg>
-                  <span>Events</span>
+                  <span>Eventos</span>
                 </div>
 
                 <div 
@@ -208,7 +324,7 @@ const Home = () => {
                     ...homeStyles.sidebarNavItem, 
                     ...(activeMenu === 'Calendar' ? homeStyles.sidebarNavItemActive : {})
                   }}
-                  onClick={() => { setSidebarOpen(false); scrollToSection('Calendar'); }}
+                  onClick={() => { setSidebarOpen(false); setActiveMenu('Calendar'); navigate('/dashboard'); }}
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
@@ -216,7 +332,7 @@ const Home = () => {
                     <line x1="8" y1="2" x2="8" y2="6"/>
                     <line x1="3" y1="10" x2="21" y2="10"/>
                   </svg>
-                  <span>Calendar</span>
+                  <span>Calendario</span>
                 </div>
 
                 <div 
@@ -230,7 +346,7 @@ const Home = () => {
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                     <circle cx="12" cy="7" r="4"/>
                   </svg>
-                  <span>Profile</span>
+                  <span>Perfil</span>
                 </div>
 
                 <div 
@@ -244,7 +360,7 @@ const Home = () => {
                     <circle cx="12" cy="4" r="2"/>
                     <path d="M12 6v6m0 0v6m-4-8h8"/>
                   </svg>
-                  <span>Accessibility</span>
+                  <span>Accesibilidad</span>
                 </div>
 
                 <div 
@@ -259,7 +375,7 @@ const Home = () => {
                     <circle cx="12" cy="5" r="2"/>
                     <path d="M12 7v4"/>
                   </svg>
-                  <span>AI Assistant</span>
+                  <span>Asistente IA</span>
                 </div>
               </div>
             </motion.aside>
@@ -271,18 +387,21 @@ const Home = () => {
       <main ref={scrollContainerRef} style={homeStyles.dashboardContent}>
         <div style={homeStyles.welcomeBanner}>
           <div style={homeStyles.welcomeTitleGroup}>
-            <h1 style={homeStyles.welcomeH1}>Ready to <span style={{ color: '#A30D11' }}>Push</span> Your Limits?</h1>
-            <p style={homeStyles.welcomeP}>Your personalized AI insights are ready. You've maintained a 12-day streak. Keep the momentum going!</p>
+            <h1 style={homeStyles.welcomeH1}>¿Listo para <span style={{ color: '#A30D11' }}>superar</span> tus límites?</h1>
+            <p style={homeStyles.welcomeP}>Tus recomendaciones personalizadas de IA ya están listas. Llevas una racha de 12 días. ¡Sigue con el impulso!</p>
           </div>
           <button style={homeStyles.notificationsBtn} onClick={() => navigate('/notifications')}>
-            NOTIFICATIONS
+            NOTIFICACIONES
+            {unreadCount > 0 && (
+              <span style={homeStyles.notificationsBadge}>{unreadCount}</span>
+            )}
           </button>
         </div>
 
         <div style={homeStyles.statsTopGrid}>
           <div style={homeStyles.statBox}>
             <div style={homeStyles.statBoxHeader}>
-              <span style={homeStyles.statBoxTitle}>NEXT EVENT</span>
+              <span style={homeStyles.statBoxTitle}>PRÓXIMO EVENTO</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A30D11" strokeWidth="2">
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
                 <line x1="16" y1="2" x2="16" y2="6"/>
@@ -298,7 +417,7 @@ const Home = () => {
 
           <div style={homeStyles.statBox}>
             <div style={homeStyles.statBoxHeader}>
-              <span style={homeStyles.statBoxTitle}>MY ACTIVITIES</span>
+              <span style={homeStyles.statBoxTitle}>MIS ACTIVIDADES</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" strokeWidth="2">
                 <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
                 <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
@@ -306,34 +425,34 @@ const Home = () => {
             </div>
             <div>
               <div style={homeStyles.statBoxValueLarge}>08</div>
-              <div style={homeStyles.statBoxSubtext}>Confirmed sports</div>
+              <div style={homeStyles.statBoxSubtext}>Deportes confirmados</div>
             </div>
           </div>
 
           <div style={homeStyles.statBox}>
             <div style={homeStyles.statBoxHeader}>
-              <span style={homeStyles.statBoxTitle}>AI INJURY RISK</span>
+              <span style={homeStyles.statBoxTitle}>RIESGO DE LESIÓN IA</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0D9488" strokeWidth="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
             </div>
             <div>
-              <div style={homeStyles.riskBadgeLow}>Low</div>
+              <div style={homeStyles.riskBadgeLow}>Bajo</div>
               <div style={homeStyles.riskProgressBar}><div style={homeStyles.riskProgressFill}></div></div>
-              <div style={{ fontSize: '11px', marginTop: '6px', color: '#475569' }}>Optimal recovery detected</div>
+              <div style={{ fontSize: '11px', marginTop: '6px', color: '#475569' }}>Recuperación óptima detectada</div>
             </div>
           </div>
 
           <div style={homeStyles.statBox}>
             <div style={homeStyles.statBoxHeader}>
-              <span style={homeStyles.statBoxTitle}>STREAK</span>
+              <span style={homeStyles.statBoxTitle}>RACHA</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A30D11" strokeWidth="2">
                 <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.5 4 6.5 2 2 3 3.5 3 5.5a6 6 0 1 1-12 0c0-1.03.23-2 .63-2.87Z"/>
               </svg>
             </div>
             <div>
-              <div style={homeStyles.statBoxValueLarge}>12 <span style={{ fontSize: '14px', fontWeight: '500', color: '#64748B' }}>Days</span></div>
-              <div style={homeStyles.statBoxSubtext}>Keep it up!</div>
+              <div style={homeStyles.statBoxValueLarge}>12 <span style={{ fontSize: '14px', fontWeight: '500', color: '#64748B' }}>Días</span></div>
+              <div style={homeStyles.statBoxSubtext}>¡Sigue así!</div>
             </div>
           </div>
         </div>
@@ -342,7 +461,7 @@ const Home = () => {
           <div ref={eventsRef} style={homeStyles.eventsSection}>
             <div style={homeStyles.sectionHeaderRow}>
               <h3 style={homeStyles.sectionTitle}>Eventos Recomendados para ti</h3>
-              <span style={homeStyles.seeAllLink} onClick={() => alert('Ver todos los eventos')}>SEE ALL</span>
+              <span style={homeStyles.seeAllLink} onClick={() => alert('Ver todos los eventos')}>VER TODOS</span>
             </div>
 
             <div style={homeStyles.eventCard}>
@@ -380,7 +499,7 @@ const Home = () => {
                 </div>
                 <div style={homeStyles.eventCardFooter}>
                   <span style={homeStyles.spotsAvailable}>12 cupos disponibles</span>
-                  <button style={homeStyles.registerEventBtn} onClick={() => alert('¡Inscripción simulada con éxito!')}>INSCRIBIRSE</button>
+                  <button style={homeStyles.registerEventBtn} onClick={() => handleOpenEnrollModal(eventsData[0])}>INSCRIBIRSE</button>
                 </div>
               </div>
             </div>
@@ -420,7 +539,7 @@ const Home = () => {
                 </div>
                 <div style={homeStyles.eventCardFooter}>
                   <span style={homeStyles.spotsAvailable}>5 cupos disponibles</span>
-                  <button style={homeStyles.registerEventBtn} onClick={() => alert('¡Inscripción simulada con éxito!')}>INSCRIBIRSE</button>
+                  <button style={homeStyles.registerEventBtn} onClick={() => handleOpenEnrollModal(eventsData[1])}>INSCRIBIRSE</button>
                 </div>
               </div>
             </div>
@@ -503,6 +622,133 @@ const Home = () => {
           </div>
         </div>
       </main>
+
+      {enrollModalStep && (
+        <div style={homeStyles.enrollModalOverlay} onClick={handleCloseEnrollModal}>
+          <div style={homeStyles.enrollModalCard} onClick={(e) => e.stopPropagation()}>
+            {enrollModalStep === 'confirm' && (
+              <>
+                <div style={homeStyles.enrollModalIcon}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#A30D11" strokeWidth="2">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" />
+                    <path d="M6 20v-1a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v1" />
+                    <path d="M16 8l4 4m0 0l-4 4m4-4H10" />
+                  </svg>
+                </div>
+                <h2 style={homeStyles.enrollModalTitle}>¿Deseas inscribirte?</h2>
+                <p style={homeStyles.enrollModalText}>
+                  Al inscribirte, podrás acceder a todas las funcionalidades y beneficios de Inklusport.
+                </p>
+                <div style={homeStyles.enrollModalActions}>
+                  <button style={homeStyles.enrollModalSecondaryBtn} onClick={handleCloseEnrollModal}>Cancelar</button>
+                  <button style={homeStyles.enrollModalPrimaryBtn} onClick={handleConfirmEnroll}>Inscribirse</button>
+                </div>
+              </>
+            )}
+
+            {enrollModalStep === 'form' && selectedEvent && (
+              <form style={homeStyles.enrollForm} onSubmit={handleSubmitEnrollment}>
+                <div style={homeStyles.enrollFormHeader}>
+                  <div style={homeStyles.enrollEventTag}>{selectedEvent.tag}</div>
+                  <h2 style={homeStyles.enrollFormTitle}>Inscripción a {selectedEvent.title}</h2>
+                  <p style={homeStyles.enrollModalText}>{selectedEvent.description}</p>
+                </div>
+
+                <div style={homeStyles.enrollFieldGroup}>
+                  <label style={homeStyles.enrollLabel}>Nombre completo</label>
+                  <input
+                    style={homeStyles.enrollInput}
+                    type="text"
+                    name="nombre"
+                    value={enrollmentForm.nombre}
+                    onChange={handleChangeEnrollmentField}
+                    placeholder="Tu nombre completo"
+                    disabled={enrollmentLoading}
+                  />
+                </div>
+
+                <div style={homeStyles.enrollFieldGroup}>
+                  <label style={homeStyles.enrollLabel}>Correo electrónico</label>
+                  <input
+                    style={homeStyles.enrollInput}
+                    type="email"
+                    name="email"
+                    value={enrollmentForm.email}
+                    onChange={handleChangeEnrollmentField}
+                    placeholder="tu@email.com"
+                    disabled={enrollmentLoading}
+                  />
+                </div>
+
+                <div style={homeStyles.enrollFieldRow}>
+                  <div style={homeStyles.enrollFieldHalf}>
+                    <label style={homeStyles.enrollLabel}>Teléfono</label>
+                    <input
+                      style={homeStyles.enrollInput}
+                      type="tel"
+                      name="telefono"
+                      value={enrollmentForm.telefono}
+                      onChange={handleChangeEnrollmentField}
+                      placeholder="+52 000 000 0000"
+                      disabled={enrollmentLoading}
+                    />
+                  </div>
+                  <div style={homeStyles.enrollFieldHalf}>
+                    <label style={homeStyles.enrollLabel}>Tipo de discapacidad</label>
+                    <input
+                      style={homeStyles.enrollInput}
+                      type="text"
+                      name="disabilityType"
+                      value={enrollmentForm.disabilityType}
+                      onChange={handleChangeEnrollmentField}
+                      placeholder="Ej. Parálisis cerebral"
+                      disabled={enrollmentLoading}
+                    />
+                  </div>
+                </div>
+
+                <div style={homeStyles.enrollFieldGroup}>
+                  <label style={homeStyles.enrollLabel}>Comentarios</label>
+                  <textarea
+                    style={homeStyles.enrollTextarea}
+                    name="comentarios"
+                    value={enrollmentForm.comentarios}
+                    onChange={handleChangeEnrollmentField}
+                    placeholder="¿Necesitas alguna adaptación?"
+                    disabled={enrollmentLoading}
+                  />
+                </div>
+
+                {enrollmentError && <div style={homeStyles.enrollError}>{enrollmentError}</div>}
+
+                <div style={homeStyles.enrollModalActions}>
+                  <button type="button" style={homeStyles.enrollModalSecondaryBtn} onClick={handleCloseEnrollModal}>Cancelar</button>
+                  <button type="submit" style={homeStyles.enrollModalPrimaryBtn} disabled={enrollmentLoading}>
+                    {enrollmentLoading ? 'Confirmando...' : 'Confirmar inscripción'}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {enrollModalStep === 'success' && selectedEvent && (
+              <>
+                <div style={homeStyles.successIcon}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#047857" strokeWidth="2">
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                </div>
+                <h2 style={homeStyles.enrollModalTitle}>Inscripción exitosa</h2>
+                <p style={homeStyles.enrollModalText}>
+                  Tu inscripción en <strong>{selectedEvent.title}</strong> fue confirmada correctamente. Ya puedes disfrutar de Inklusport y tu evento.
+                </p>
+                <div style={homeStyles.enrollModalActions}>
+                  <button style={homeStyles.enrollModalPrimaryBtn} onClick={handleCloseEnrollModal}>Continuar</button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -705,6 +951,7 @@ const homeStyles = {
     lineHeight: '1.5',
   },
   notificationsBtn: {
+    position: 'relative',
     backgroundColor: '#A30D11',
     color: '#ffffff',
     border: 'none',
@@ -716,6 +963,20 @@ const homeStyles = {
     cursor: 'pointer',
     boxShadow: '0 4px 12px rgba(225, 29, 72, 0.25)',
     whiteSpace: 'nowrap',
+  },
+  notificationsBadge: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: '22px',
+    height: '22px',
+    borderRadius: '999px',
+    backgroundColor: '#FCD34D',
+    color: '#0F172A',
+    fontSize: '11px',
+    fontWeight: '700',
+    marginLeft: '10px',
+    padding: '0 8px',
   },
   statsTopGrid: {
     display: 'grid',
@@ -890,6 +1151,163 @@ const homeStyles = {
     fontWeight: '700',
     letterSpacing: '0.5px',
     cursor: 'pointer',
+  },
+  enrollModalOverlay: {
+    position: 'fixed',
+    inset: 0,
+    backgroundColor: 'rgba(15, 23, 42, 0.55)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '24px',
+    zIndex: 2000,
+  },
+  enrollModalCard: {
+    width: 'min(560px, 100%)',
+    backgroundColor: '#ffffff',
+    borderRadius: '30px',
+    padding: '32px',
+    boxShadow: '0 40px 120px rgba(15, 23, 42, 0.18)',
+    maxHeight: 'calc(100vh - 48px)',
+    overflowY: 'auto',
+  },
+  enrollModalIcon: {
+    width: '72px',
+    height: '72px',
+    margin: '0 auto 16px',
+    borderRadius: '50%',
+    backgroundColor: '#FEF2F2',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  enrollModalTitle: {
+    fontSize: '26px',
+    fontWeight: '800',
+    color: '#0F172A',
+    textAlign: 'center',
+    margin: '0 0 14px 0',
+    lineHeight: '1.1',
+  },
+  enrollModalText: {
+    fontSize: '14px',
+    color: '#475569',
+    textAlign: 'center',
+    margin: '0 auto 24px',
+    maxWidth: '460px',
+    lineHeight: '1.7',
+  },
+  enrollModalActions: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '12px',
+    flexWrap: 'wrap',
+  },
+  enrollModalPrimaryBtn: {
+    backgroundColor: '#A30D11',
+    color: '#FFFFFF',
+    border: 'none',
+    padding: '14px 22px',
+    borderRadius: '12px',
+    fontWeight: '800',
+    cursor: 'pointer',
+    minWidth: '160px',
+  },
+  enrollModalSecondaryBtn: {
+    backgroundColor: '#FFFFFF',
+    color: '#0F172A',
+    border: '1px solid #E2E8F0',
+    padding: '14px 22px',
+    borderRadius: '12px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    minWidth: '160px',
+  },
+  enrollForm: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '20px',
+  },
+  enrollFormHeader: {
+    textAlign: 'center',
+  },
+  enrollEventTag: {
+    display: 'inline-flex',
+    marginBottom: '14px',
+    backgroundColor: '#FEF2F2',
+    color: '#A30D11',
+    fontSize: '11px',
+    fontWeight: '800',
+    letterSpacing: '0.2em',
+    textTransform: 'uppercase',
+    padding: '8px 14px',
+    borderRadius: '999px',
+  },
+  enrollFormTitle: {
+    fontSize: '22px',
+    fontWeight: '800',
+    color: '#0F172A',
+    margin: '0 0 10px 0',
+  },
+  enrollFieldGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  enrollLabel: {
+    fontSize: '12px',
+    fontWeight: '700',
+    color: '#475569',
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+  },
+  enrollInput: {
+    width: '100%',
+    padding: '14px 16px',
+    borderRadius: '14px',
+    border: '1px solid #E2E8F0',
+    backgroundColor: '#F8FAFC',
+    color: '#0F172A',
+    fontSize: '14px',
+  },
+  enrollTextarea: {
+    width: '100%',
+    minHeight: '110px',
+    padding: '14px 16px',
+    borderRadius: '14px',
+    border: '1px solid #E2E8F0',
+    backgroundColor: '#F8FAFC',
+    color: '#0F172A',
+    fontSize: '14px',
+    resize: 'vertical',
+  },
+  enrollFieldRow: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '16px',
+  },
+  enrollFieldHalf: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  enrollError: {
+    color: '#B91C1C',
+    backgroundColor: '#FEF2F2',
+    border: '1px solid #FECACA',
+    padding: '12px 16px',
+    borderRadius: '14px',
+    fontSize: '13px',
+  },
+  successIcon: {
+    width: '72px',
+    height: '72px',
+    margin: '0 auto 16px',
+    borderRadius: '50%',
+    backgroundColor: '#DCFCE7',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   rightSidebarColumn: {
     display: 'flex',

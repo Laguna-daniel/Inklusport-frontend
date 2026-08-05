@@ -6,6 +6,7 @@ import { useAuth } from './domain/contexts/AuthContext';
 import Login from './ui/pages/Login.jsx';
 import Register from './ui/pages/Register.jsx';
 import Home from './ui/pages/Home.jsx';
+import Dashboard from './ui/pages/Dashboard.jsx';
 import AdminDashboard from './ui/pages/AdminDashboard.jsx';
 import Accessibility from './ui/pages/accessibility.jsx';
 import Notifications from './ui/pages/Notifications.jsx';
@@ -304,6 +305,7 @@ function App() {
         
         {/* Dashboard - Home (NUEVO) */}
         <Route path="/home" element={<AnimatedPage><ProtectedRoute><Home /></ProtectedRoute></AnimatedPage>} />
+        <Route path="/dashboard" element={<AnimatedPage><ProtectedRoute><Dashboard /></ProtectedRoute></AnimatedPage>} />
         <Route path="/admin" element={<AnimatedPage><AdminRoute><AdminDashboard /></AdminRoute></AnimatedPage>} />
         <Route path="/accessibility" element={<AnimatedPage><ProtectedRoute><Accessibility /></ProtectedRoute></AnimatedPage>} />
         <Route path="/notifications" element={<AnimatedPage><ProtectedRoute><Notifications /></ProtectedRoute></AnimatedPage>} />

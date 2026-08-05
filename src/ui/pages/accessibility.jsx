@@ -115,6 +115,10 @@ export default function Accessibility() {
     boxShadow: contraste === "ALTO" ? "none" : "0 4px 12px rgba(0, 0, 0, 0.03)",
     border: currentTheme.bordeTarjeta,
     transition: "all 0.3s ease",
+    opacity: 0,
+    transform: "translateY(16px)",
+    animation: "fadeInUp 0.36s ease forwards",
+    animationDelay: "0.05s",
   };
 
   const tituloSeccionStyle = {
@@ -218,6 +222,12 @@ export default function Accessibility() {
 
   return (
     <div style={contenedorStyle}>
+      <style>{`
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(16px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
       <div style={wrapperStyle}>
         
         <div style={headerStyle}>
